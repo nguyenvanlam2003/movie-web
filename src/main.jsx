@@ -4,6 +4,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./pages/Root.jsx";
 import HomePage from "./pages/HomePage.jsx";
+import MovieDetail from "@pages/MovieDetail";
 
 const router = createBrowserRouter([
     {
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <HomePage />,
+            },
+            {
+                path: "/info/:slug",
+                element: <MovieDetail />,
             },
         ],
     },
