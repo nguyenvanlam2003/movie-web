@@ -6,6 +6,9 @@ import Root from "./pages/Root.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import MovieDetail from "@pages/MovieDetail";
 import Watch from "@pages/Watch";
+import SingleMovie from "@pages/SingleMovie";
+import TVSeries from "@pages/TVSeries";
+import CartoonMovie from "@pages/CartoonMovie";
 
 const router = createBrowserRouter([
     {
@@ -22,6 +25,18 @@ const router = createBrowserRouter([
             {
                 path: "/watch/:slug",
                 element: <Watch />,
+            },
+            {
+                path: "/movie",
+                element: <SingleMovie />,
+            },
+            {
+                path: "/tv",
+                element: <TVSeries />,
+            },
+            {
+                path: "/cartoon",
+                element: <CartoonMovie />,
             },
         ],
     },

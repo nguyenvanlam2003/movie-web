@@ -20,14 +20,14 @@ export const TABS = [
 export const MEDIA_TABS = [
     {
         title: "PHIM LẺ",
-        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/phim-le?limit=24&page=2`,
+        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/phim-le?limit=18&page=2`,
     },
     {
         title: "PHIM BỘ",
-        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/phim-bo?limit=24&page=2`,
+        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/phim-bo?limit=18&page=2`,
     },
     {
         title: "Phim hoạt hình đề cử",
-        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/hoat-hinh?limit=24&page=2`,
+        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/hoat-hinh?limit=18&page=2`,
     },
 ];
