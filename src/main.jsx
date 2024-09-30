@@ -9,6 +9,7 @@ import Watch from "@pages/Watch";
 import SingleMovie from "@pages/SingleMovie";
 import TVSeries from "@pages/TVSeries";
 import CartoonMovie from "@pages/CartoonMovie";
+import SearchPage from "@pages/SearchPage";
 
 const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: "/cartoon",
                 element: <CartoonMovie />,
+            },
+            {
+                path: "/search",
+                element: <SearchPage />,
             },
         ],
     },
