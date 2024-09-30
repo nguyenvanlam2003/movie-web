@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./pages/Root.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import MovieDetail from "@pages/MovieDetail";
+import Watch from "@pages/Watch";
 
 const router = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
             {
                 path: "/info/:slug",
                 element: <MovieDetail />,
+            },
+            {
+                path: "/watch/:slug",
+                element: <Watch />,
             },
         ],
     },
