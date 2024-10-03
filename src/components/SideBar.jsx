@@ -1,16 +1,24 @@
-import { faCircle, faFilm, faRightFromBracket, faTableList, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCircle,
+    faFilm,
+    faRightFromBracket,
+    faTableList,
+    faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const SideBar = () => {
     return (
-        <aside className="fixed top-0 left-0 bottom-0 shadow-sm shadow-slate-700 bg-[#343a40] text-white px-10 py-2">
+        <aside className="h-lvh bg-[#343a40] px-10 py-2 text-white shadow-sm shadow-slate-700">
             <a href="#!">
-                <h1 className="text-2xl font-bold uppercase text-red-500">MỌT PHIM</h1>
+                <h1 className="text-2xl font-bold uppercase text-red-500">
+                    MỌT PHIM
+                </h1>
             </a>
-            <div className="flex items-center gap-2 my-4 py-2 border border-t-[#4f5962] border-transparent border-b-[#4f5962]">
+            <div className="my-4 flex items-center gap-2 border border-transparent border-b-[#4f5962] border-t-[#4f5962] py-2">
                 <img
                     src="https://www.speak2university.com/assets/admin/dist/img/user-avatar.png"
-                    className="w-8 h-8 rounded-full"
+                    className="h-8 w-8 rounded-full"
                     alt=""
                 />
                 <p className="text-xl">Admin</p>
@@ -36,11 +44,17 @@ const SideBar = () => {
                         </div>
                         <ul className="ml-4">
                             <li className="flex items-center gap-2 py-2">
-                                <FontAwesomeIcon icon={faCircle} className="w-2 h-2" />
+                                <FontAwesomeIcon
+                                    icon={faCircle}
+                                    className="h-2 w-2"
+                                />
                                 <a href="#!">Tài khoản Admin</a>
                             </li>
                             <li className="flex items-center gap-2 py-2">
-                                <FontAwesomeIcon icon={faCircle} className="w-2 h-2" />
+                                <FontAwesomeIcon
+                                    icon={faCircle}
+                                    className="h-2 w-2"
+                                />
                                 <a href="#!">Tài khoản User</a>
                             </li>
                         </ul>
