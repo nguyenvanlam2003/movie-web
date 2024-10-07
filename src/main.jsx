@@ -13,6 +13,7 @@ import SearchPage from "@pages/SearchPage";
 import SignIn from "@pages/SignIn";
 import SignUp from "@pages/SignUp";
 import ManageMovie from "@pages/Admin/ManageMovie";
+import CreateMovie from "@pages/Admin/CreateMovie";
 
 const router = createBrowserRouter([
     {
@@ -60,10 +61,14 @@ const router = createBrowserRouter([
         path: "/admin/movie",
         element: <ManageMovie />,
     },
+    {
+        path: "/admin/movie/create",
+        element: <CreateMovie />,
+    },
 ]);
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <RouterProvider router={router} />
-    </StrictMode>
+    </StrictMode>,
 );
