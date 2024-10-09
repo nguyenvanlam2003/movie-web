@@ -4,6 +4,7 @@ const setupSwagger = require("./swagger");
 const mongoose = require("mongoose")
 const authRoutes = require("./routers/auth.js")
 const userRoutes = require("./routers/user.js")
+const genreRouter = require("./routers/genre.js")
 const cors = require('cors');
 const dotenv = require("dotenv")
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/genres", genreRouter);
 
 
 

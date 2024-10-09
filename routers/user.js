@@ -11,7 +11,13 @@ const verify = require('../verifyToken');
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []  # Nếu bạn đang sử dụng xác thực JWT
- *    
+ *     parameters:
+ *       - in: query
+ *         name: new
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Nếu có, sẽ sắp xếp danh sách thể loại theo _id
  *     responses:
  *       200:
  *         description: Danh sách người dùng
@@ -110,11 +116,16 @@ router.get("/", verify, async (req, res) => {
  *         description: Lỗi máy chủ
  */
 
-router.get("/find/:id", async (req, res) => {
+router.get("/find/:id", verify, async (req, res) => {
     try {
-        const user = await User.findById(req.query.id);
-        const { password, ...info } = user._doc;
-        res.status(200).json(info)
+        if (req.user.id === req.params.id || req.user.isAdmin) {
+            const user = await User.findById(req.params.id);
+            const { password, ...info } = user._doc;
+            res.status(200).json(info)
+        }
+        else {
+            res.status(403).json("Bạn chỉ có thể xem tài khoản của mình!");
+        }
     } catch (err) {
         res.status(500).json(err)
     }
