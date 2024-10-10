@@ -249,6 +249,21 @@ const CreateMovie = () => {
 
                         <div className="mb-3">
                             <label
+                                htmlFor="content"
+                                className="mb-1 block font-bold"
+                            >
+                                Nội dung phim
+                            </label>
+                            <textarea
+                                name="content"
+                                id="content"
+                                className="w-full resize-none rounded-lg border border-solid border-[#d2d1d6] px-3 py-2 focus:border-[#77dae6]"
+                                rows={4}
+                            ></textarea>
+                        </div>
+
+                        <div className="mb-3">
+                            <label
                                 htmlFor="vote-average"
                                 className="mb-1 block font-bold"
                             >

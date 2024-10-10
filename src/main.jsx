@@ -12,8 +12,9 @@ import CartoonMovie from "@pages/CartoonMovie";
 import SearchPage from "@pages/SearchPage";
 import SignIn from "@pages/SignIn";
 import SignUp from "@pages/SignUp";
-import ManageMovie from "@pages/Admin/ManageMovie";
-import CreateMovie from "@pages/Admin/CreateMovie";
+import ManageMovie from "@pages/Admin/Movie/ManageMovie";
+import CreateMovie from "@pages/Admin/Movie/CreateMovie";
+import EditMovie from "@pages/Admin/Movie/EditMovie";
 
 const router = createBrowserRouter([
     {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/movie/create",
         element: <CreateMovie />,
+    },
+    {
+        path: "/admin/movie/edit",
+        element: <EditMovie />,
     },
 ]);
 
