@@ -30,18 +30,6 @@ const EditMovie = () => {
     const [actor, setActor] = useState("Beckham");
     const [trailerKey, setTrailerKey] = useState("TEST");
 
-    // const handleChangePoster = () => {
-    //     const posterImg = document.getElementById("poster-img");
-    //     const previewPoster = document.getElementById("poster-preview");
-    //     previewPoster.src = window.URL.createObjectURL(posterImg.files[0]);
-    // };
-
-    // const handleChangeThumb = () => {
-    //     const thumbImg = document.getElementById("thumb-img");
-    //     const previewThumb = document.getElementById("thumb-preview");
-    //     previewThumb.src = window.URL.createObjectURL(thumbImg.files[0]);
-    // };
-
     const handleChangePoster = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -106,7 +94,7 @@ const EditMovie = () => {
                             </label>
                             <input
                                 id="origin-name"
-                                {...register("origin-name")}
+                                {...register("originName")}
                                 type="text"
                                 placeholder="Nhập tên gốc phim"
                                 value={originName}
@@ -240,7 +228,7 @@ const EditMovie = () => {
                             </label>
                             <input
                                 id="vote-average"
-                                {...register("vote-average")}
+                                {...register("voteAverage")}
                                 type="number"
                                 placeholder="Nhập điểm đánh giá"
                                 value={voteAverage}

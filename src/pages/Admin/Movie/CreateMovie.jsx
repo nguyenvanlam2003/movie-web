@@ -1,81 +1,42 @@
+import FormField from "@components/AdminForm/FormField";
+import EpisodesInput from "@components/AdminForm/FormInput/EpisodesInput";
+import GenresInput from "@components/AdminForm/FormInput/GenresInput";
+import TypeInput from "@components/AdminForm/FormInput/TypeInput";
 import SideBar from "@components/SideBar";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-
-const GENRES = [
-    {
-        id: "37a7b38b6184a5ebd3c43015aa20709d",
-        name: "Chính Kịch",
-        slug: "chinh-kich",
-    },
-    {
-        id: "ba6fd52e5a3aca80eaaf1a3b50a182db",
-        name: "Hài Hước",
-        slug: "hai-huoc",
-    },
-    {
-        id: "46a6df48b64935df845cf8ad4f448d4c",
-        name: "Tình Cảm",
-        slug: "tinh-cam",
-    },
-    {
-        id: "1a18f0d42e4e66060dbf1fd7cb25d11a",
-        name: "Tâm Lý",
-        slug: "tam-ly",
-    },
-];
+import { useForm } from "react-hook-form";
 
 const CreateMovie = () => {
-    const [movieType, setMovieType] = useState("");
-    const [episodes, setEpisodes] = useState([]);
+    const { handleSubmit, control, register, setValue } = useForm({
+        defaultValues: {
+            type: "single",
+        },
+    });
+    const [posterPreview, setPosterPreview] = useState("/img-placeholder.jpg");
+    const [thumbPreview, setThumbPreview] = useState("/img-placeholder.jpg");
 
-    const handleChangeMovieType = (e) => {
-        setMovieType(e.target.value);
-        if (movieType === "single") {
-            setEpisodes([
-                {
-                    name: "",
-                    video: "",
-                },
-            ]);
-        } else {
-            setEpisodes([
-                {
-                    name: "",
-                    video: "",
-                },
-            ]);
+    const onSubmit = (data) => {
+        console.log({ formData: data });
+    };
+
+    const handleChangePoster = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setPosterPreview(previewUrl);
+            setValue("posterUrl", file, { shouldValidate: true });
         }
     };
 
-    const addEpisode = (e) => {
-        e.preventDefault();
-        setEpisodes([
-            ...episodes,
-            {
-                name: "",
-                video: "",
-            },
-        ]);
-    };
-
-    const handleEpisodeChange = (index, field, value) => {
-        const updatedEpisode = [...episodes];
-        episodes[index][field] = value;
-        setEpisodes(updatedEpisode);
-    };
-
-    const handleChangePoster = () => {
-        const posterImg = document.getElementById("poster-img");
-        const previewPoster = document.getElementById("poster-preview");
-        previewPoster.src = window.URL.createObjectURL(posterImg.files[0]);
-    };
-
-    const handleChangeThumb = () => {
-        const thumbImg = document.getElementById("thumb-img");
-        const previewThumb = document.getElementById("thumb-preview");
-        previewThumb.src = window.URL.createObjectURL(thumbImg.files[0]);
+    const handleChangeThumb = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setThumbPreview(previewUrl);
+            setValue("thumbUrl", file, { shouldValidate: true });
+        }
     };
 
     return (
@@ -96,6 +57,7 @@ const CreateMovie = () => {
                         action=""
                         className="border-2 border-[#e3e3e9] border-l-transparent border-r-transparent p-4"
                         autoComplete="off"
+                        onSubmit={handleSubmit(onSubmit)}
                     >
                         <div className="mb-3">
                             <label
@@ -106,7 +68,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="name"
-                                name="name"
+                                {...register("name")}
                                 type="text"
                                 placeholder="Nhập tên phim"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -121,7 +83,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="origin-name"
-                                name="origin-name"
+                                {...register("originName")}
                                 type="text"
                                 placeholder="Nhập tên gốc phim"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -136,7 +98,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="slug"
-                                name="slug"
+                                {...register("slug")}
                                 type="text"
                                 placeholder="Nhập slug"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -160,7 +122,7 @@ const CreateMovie = () => {
                             <label htmlFor="poster-img">
                                 <img
                                     id="poster-preview"
-                                    src="/img-placeholder.jpg"
+                                    src={posterPreview}
                                     alt=""
                                     className="mt-1 h-32 w-32 cursor-pointer rounded-xl object-cover"
                                 />
@@ -185,7 +147,7 @@ const CreateMovie = () => {
                             <label htmlFor="thumb-img">
                                 <img
                                     id="thumb-preview"
-                                    src="/img-placeholder.jpg"
+                                    src={thumbPreview}
                                     alt=""
                                     className="mt-1 h-32 w-32 cursor-pointer rounded-xl object-cover"
                                 />
@@ -193,58 +155,21 @@ const CreateMovie = () => {
                         </div>
 
                         <div className="mb-3">
-                            <label
-                                htmlFor="typeSelect"
-                                className="mb-1 block font-bold"
-                            >
-                                Chọn loại phim
-                            </label>
-                            <select
+                            <FormField
+                                label="Chọn loại phim"
                                 name="type"
-                                id="typeSelect"
-                                className="block w-full rounded-lg border border-solid border-[#ced4da] bg-white px-3 py-2 focus:border-[#77dae6]"
-                                onChange={handleChangeMovieType}
-                            >
-                                <option value="">---Chọn loại phim---</option>
-                                <option value="single">Phim lẻ</option>
-                                <option value="series">Phim bộ</option>
-                            </select>
+                                control={control}
+                                Component={TypeInput}
+                            />
                         </div>
 
                         <div className="mb-3">
-                            <label htmlFor="" className="mb-1 block font-bold">
-                                Thể loại
-                            </label>
-                            {/* <select
+                            <FormField
+                                label="Chọn thể loại"
                                 name="genres"
-                                id="genresSelect"
-                                className="block w-full rounded-lg border border-solid border-[#ced4da] bg-white px-3 py-2 focus:border-[#77dae6]"
-                            >
-                                <option value="">
-                                    ---Chọn thể loại phim---
-                                </option>
-                                <option value="chinh-kich">Chính kịch</option>
-                                <option value="hanh-dong">Hành động</option>
-                                <option value="gia-dinh">Gia đình</option>
-                            </select> */}
-                            <div className="flex flex-wrap gap-2">
-                                {GENRES.map((genre) => (
-                                    <div key={genre.id}>
-                                        <input
-                                            type="checkbox"
-                                            id={genre.slug}
-                                            value={genre.slug}
-                                            name="genres"
-                                        />
-                                        <label
-                                            htmlFor={genre.slug}
-                                            className="ml-1"
-                                        >
-                                            {genre.name}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
+                                control={control}
+                                Component={GenresInput}
+                            />
                         </div>
 
                         <div className="mb-3">
@@ -255,7 +180,7 @@ const CreateMovie = () => {
                                 Nội dung phim
                             </label>
                             <textarea
-                                name="content"
+                                {...register("content")}
                                 id="content"
                                 className="w-full resize-none rounded-lg border border-solid border-[#d2d1d6] px-3 py-2 focus:border-[#77dae6]"
                                 rows={4}
@@ -271,8 +196,8 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="vote-average"
-                                name="vote-average"
-                                type="number"
+                                {...register("voteAverage")}
+                                type="text"
                                 placeholder="Nhập điểm đánh giá"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
@@ -287,7 +212,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="time"
-                                name="time"
+                                {...register("time")}
                                 type="text"
                                 placeholder="Nhập thời gian"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -302,7 +227,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="year"
-                                name="year"
+                                {...register("year")}
                                 type="text"
                                 placeholder="Nhập năm phát hành"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -317,7 +242,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="director"
-                                name="director"
+                                {...register("director")}
                                 type="text"
                                 placeholder="Nhập đạo diễn"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -332,7 +257,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="actor"
-                                name="actor"
+                                {...register("actor")}
                                 type="text"
                                 placeholder="Nhập diễn viên"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -348,70 +273,24 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="trailer-key"
-                                name="trailer"
+                                {...register("trailer")}
                                 type="text"
                                 placeholder="Nhập trailer key"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>
 
-                        {episodes.map((episode, index) => (
-                            <div
-                                key={index}
-                                className="border-b-2 border-t-2 border-[#e3e3e9]"
-                            >
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor=""
-                                        className="mb-1 block font-bold"
-                                    >{`Tập ${index + 1}`}</label>
-                                    <input
-                                        type="text"
-                                        value={episode.name}
-                                        placeholder="Nhập tên của tập phim"
-                                        className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                                        onChange={(e) => {
-                                            handleEpisodeChange(
-                                                index,
-                                                "name",
-                                                e.target.value,
-                                            );
-                                        }}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor=""
-                                        className="mb-1 block font-bold"
-                                    >{`Video tập ${index + 1}`}</label>
-                                    <input
-                                        type="url"
-                                        value={episode.video}
-                                        placeholder="Nhập link video"
-                                        className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                                        onChange={(e) => {
-                                            handleEpisodeChange(
-                                                index,
-                                                "video",
-                                                e.target.value,
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-
-                        {movieType === "series" && (
-                            <button
-                                className="mt-2 rounded-lg bg-[#4e3698] px-3 py-2 text-white"
-                                onClick={addEpisode}
-                            >
-                                Thêm tập tiếp theo
-                            </button>
-                        )}
+                        <FormField
+                            name="episodes"
+                            control={control}
+                            Component={EpisodesInput}
+                        />
 
                         <div className="mt-4 flex justify-between">
-                            <button className="rounded-lg bg-[#28a745] px-4 py-3 text-white">
+                            <button
+                                className="rounded-lg bg-[#28a745] px-4 py-3 text-white"
+                                type="submit"
+                            >
                                 Thêm mới
                             </button>
                             <a

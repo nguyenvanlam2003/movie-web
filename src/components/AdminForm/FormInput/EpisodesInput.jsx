@@ -1,16 +1,18 @@
+import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 
 const EpisodesInput = ({ onChange, control }) => {
     const [episodes, setEpisodes] = useState([
-        {
-            name: "Tập 01",
-            video: "https://s3.phim1280.tv/20240326/WqZirOhF/index.m3u8",
-        },
-        {
-            name: "Tập 02",
-            video: "https://s3.phim1280.tv/20240326/kYvE9gQE/index.m3u8",
-        },
+        // {
+        //     name: "Tập 01",
+        //     video: "https://s3.phim1280.tv/20240326/WqZirOhF/index.m3u8",
+        // },
+        // {
+        //     name: "Tập 02",
+        //     video: "https://s3.phim1280.tv/20240326/kYvE9gQE/index.m3u8",
+        // },
     ]);
 
     const addEpisode = (e) => {
@@ -22,6 +24,13 @@ const EpisodesInput = ({ onChange, control }) => {
                 video: "",
             },
         ]);
+    };
+
+    const handleRemoveEpisode = (key) => {
+        const newEpisodes = episodes.filter((episode, index) => {
+            return index !== key;
+        });
+        setEpisodes(newEpisodes);
     };
 
     const handleEpisodeChange = (index, field, value) => {
@@ -62,7 +71,7 @@ const EpisodesInput = ({ onChange, control }) => {
             {episodes.map((episode, index) => (
                 <div
                     key={index}
-                    className="border-b-2 border-t-2 border-[#e3e3e9]"
+                    className="relative border-b-2 border-t-2 border-[#e3e3e9] py-2"
                 >
                     <div className="mb-3">
                         <label
@@ -102,6 +111,17 @@ const EpisodesInput = ({ onChange, control }) => {
                             }}
                         />
                     </div>
+                    {index !== 0 && (
+                        <div
+                            className="absolute right-0 top-1 cursor-pointer"
+                            onClick={() => handleRemoveEpisode(index)}
+                        >
+                            <FontAwesomeIcon
+                                icon={faCircleXmark}
+                                className="h-5 w-5"
+                            />
+                        </div>
+                    )}
                 </div>
             ))}
             {movieType === "series" && (

@@ -21,10 +21,7 @@ const GENRES = [
     },
 ];
 
-const GenresInput = ({
-    onChange,
-    value = ["37a7b38b6184a5ebd3c43015aa20709d"],
-}) => {
+const GenresInput = ({ onChange, value = [] }) => {
     return (
         <div className="flex flex-wrap gap-2">
             {GENRES.map((genre) => (
