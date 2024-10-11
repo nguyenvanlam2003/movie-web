@@ -1,6 +1,267 @@
+import Modal from "@components/Modal";
 import SideBar from "@components/SideBar";
+import { useState } from "react";
+
+// const MOVIES = [
+//     {
+//         id: crypto.randomUUID(),
+//         name: "Deadpool và Wolverine",
+//         posterUrl:
+//             "https://phimimg.com/upload/vod/20240728-1/201d7ad36c2f38804ea00636f5d793ee.jpg",
+//         time: "128 phút",
+//         year: 2024,
+//         genres: [
+//             {
+//                 id: "0bcf4077916678de9b48c89221fcf8ae",
+//                 name: "Khoa Học",
+//                 slug: "khoa-hoc",
+//             },
+//             {
+//                 id: "68564911f00849030f9c9c144ea1b931",
+//                 name: "Viễn Tưởng",
+//                 slug: "vien-tuong",
+//             },
+//             {
+//                 id: "9822be111d2ccc29c7172c78b8af8ff5",
+//                 name: "Hành Động",
+//                 slug: "hanh-dong",
+//             },
+//             {
+//                 id: "ba6fd52e5a3aca80eaaf1a3b50a182db",
+//                 name: "Hài Hước",
+//                 slug: "hai-huoc",
+//             },
+//         ],
+//         director: ["Shawn Levy"],
+//     },
+//     {
+//         id: crypto.randomUUID(),
+//         name: "Avengers: Endgame",
+//         posterUrl:
+//             "https://phimimg.com/upload/vod/20231018-1/88c1ee81bbfcd39a73db1f83203b5501.jpg",
+//         time: "180 phút",
+//         year: 2019,
+//         genres: [
+//             {
+//                 id: "66c78b23908113d478d8d85390a244b4",
+//                 name: "Phiêu Lưu",
+//                 slug: "phieu-luu",
+//             },
+//             {
+//                 id: "0bcf4077916678de9b48c89221fcf8ae",
+//                 name: "Khoa Học",
+//                 slug: "khoa-hoc",
+//             },
+//             {
+//                 id: "9822be111d2ccc29c7172c78b8af8ff5",
+//                 name: "Hành Động",
+//                 slug: "hanh-dong",
+//             },
+//         ],
+//         director: ["Joe Russo", "Anthony Russo"],
+//     },
+//     {
+//         id: crypto.randomUUID(),
+//         name: "Độc Đạo",
+//         posterUrl:
+//             "https://phimimg.com/upload/vod/20240912-1/0db8ef07872e0c69b0f1a68546066585.webp",
+//         time: "50 phút/tập",
+//         year: 2024,
+//         genres: [
+//             {
+//                 id: "35f2b21717ff9e6e817a5ffcbf03bee2",
+//                 name: "Hình Sự",
+//                 slug: "hinh-su",
+//             },
+//             {
+//                 id: "5060cc424f1d7d870f294cc4cf89d5c4",
+//                 name: "Hành Động",
+//                 slug: "hanh-dong",
+//             },
+//         ],
+//         director: ["Nguyễn Khải Anh"],
+//     },
+//     {
+//         id: crypto.randomUUID(),
+//         name: "Black Myth: Wukong",
+//         posterUrl:
+//             "https://phimimg.com/upload/vod/20240917-1/2528691ab9c3fbb348732a685f2ece0b.jpg",
+//         time: "6 phút/tập",
+//         year: 2024,
+//         genres: [
+//             {
+//                 id: "66c78b23908113d478d8d85390a244b4",
+//                 name: "Phiêu Lưu",
+//                 slug: "phieu-luu",
+//             },
+//             {
+//                 id: "0fcf63d85bf8ff2319725225a72579d5",
+//                 name: "Thần Thoại",
+//                 slug: "than-thoai",
+//             },
+//         ],
+//         director: ["Đang cập nhật"],
+//     },
+//     {
+//         id: crypto.randomUUID(),
+//         name: "Thor 4: Love And Thunder",
+//         posterUrl:
+//             "https://phimimg.com/upload/vod/20240711-1/be42cbe0b908894c7a3f2b55dada89a2.jpg",
+//         time: "115 phút",
+//         year: 2022,
+//         genres: [
+//             {
+//                 id: "9822be111d2ccc29c7172c78b8af8ff5",
+//                 name: "Hành Động",
+//                 slug: "hanh-dong",
+//             },
+//             {
+//                 id: "68564911f00849030f9c9c144ea1b931",
+//                 name: "Viễn Tưởng",
+//                 slug: "vien-tuong",
+//             },
+//             {
+//                 id: "66c78b23908113d478d8d85390a244b4",
+//                 name: "Phiêu Lưu",
+//                 slug: "phieu-luu",
+//             },
+//         ],
+//         director: ["Taika Waititi"],
+//     },
+// ];
 
 const ManageMovie = () => {
+    const [movies, setMovies] = useState([
+        {
+            id: crypto.randomUUID(),
+            name: "Deadpool và Wolverine",
+            posterUrl:
+                "https://phimimg.com/upload/vod/20240728-1/201d7ad36c2f38804ea00636f5d793ee.jpg",
+            time: "128 phút",
+            year: 2024,
+            genres: [
+                {
+                    id: "0bcf4077916678de9b48c89221fcf8ae",
+                    name: "Khoa Học",
+                    slug: "khoa-hoc",
+                },
+                {
+                    id: "68564911f00849030f9c9c144ea1b931",
+                    name: "Viễn Tưởng",
+                    slug: "vien-tuong",
+                },
+                {
+                    id: "9822be111d2ccc29c7172c78b8af8ff5",
+                    name: "Hành Động",
+                    slug: "hanh-dong",
+                },
+                {
+                    id: "ba6fd52e5a3aca80eaaf1a3b50a182db",
+                    name: "Hài Hước",
+                    slug: "hai-huoc",
+                },
+            ],
+            director: ["Shawn Levy"],
+        },
+        {
+            id: crypto.randomUUID(),
+            name: "Avengers: Endgame",
+            posterUrl:
+                "https://phimimg.com/upload/vod/20231018-1/88c1ee81bbfcd39a73db1f83203b5501.jpg",
+            time: "180 phút",
+            year: 2019,
+            genres: [
+                {
+                    id: "66c78b23908113d478d8d85390a244b4",
+                    name: "Phiêu Lưu",
+                    slug: "phieu-luu",
+                },
+                {
+                    id: "0bcf4077916678de9b48c89221fcf8ae",
+                    name: "Khoa Học",
+                    slug: "khoa-hoc",
+                },
+                {
+                    id: "9822be111d2ccc29c7172c78b8af8ff5",
+                    name: "Hành Động",
+                    slug: "hanh-dong",
+                },
+            ],
+            director: ["Joe Russo", "Anthony Russo"],
+        },
+        {
+            id: crypto.randomUUID(),
+            name: "Độc Đạo",
+            posterUrl:
+                "https://phimimg.com/upload/vod/20240912-1/0db8ef07872e0c69b0f1a68546066585.webp",
+            time: "50 phút/tập",
+            year: 2024,
+            genres: [
+                {
+                    id: "35f2b21717ff9e6e817a5ffcbf03bee2",
+                    name: "Hình Sự",
+                    slug: "hinh-su",
+                },
+                {
+                    id: "5060cc424f1d7d870f294cc4cf89d5c4",
+                    name: "Hành Động",
+                    slug: "hanh-dong",
+                },
+            ],
+            director: ["Nguyễn Khải Anh"],
+        },
+        {
+            id: crypto.randomUUID(),
+            name: "Black Myth: Wukong",
+            posterUrl:
+                "https://phimimg.com/upload/vod/20240917-1/2528691ab9c3fbb348732a685f2ece0b.jpg",
+            time: "6 phút/tập",
+            year: 2024,
+            genres: [
+                {
+                    id: "66c78b23908113d478d8d85390a244b4",
+                    name: "Phiêu Lưu",
+                    slug: "phieu-luu",
+                },
+                {
+                    id: "0fcf63d85bf8ff2319725225a72579d5",
+                    name: "Thần Thoại",
+                    slug: "than-thoai",
+                },
+            ],
+            director: ["Đang cập nhật"],
+        },
+        {
+            id: crypto.randomUUID(),
+            name: "Thor 4: Love And Thunder",
+            posterUrl:
+                "https://phimimg.com/upload/vod/20240711-1/be42cbe0b908894c7a3f2b55dada89a2.jpg",
+            time: "115 phút",
+            year: 2022,
+            genres: [
+                {
+                    id: "9822be111d2ccc29c7172c78b8af8ff5",
+                    name: "Hành Động",
+                    slug: "hanh-dong",
+                },
+                {
+                    id: "68564911f00849030f9c9c144ea1b931",
+                    name: "Viễn Tưởng",
+                    slug: "vien-tuong",
+                },
+                {
+                    id: "66c78b23908113d478d8d85390a244b4",
+                    name: "Phiêu Lưu",
+                    slug: "phieu-luu",
+                },
+            ],
+            director: ["Taika Waititi"],
+        },
+    ]);
+    const [showModal, setShowModal] = useState(false);
+    const [deletedMovieId, setDeletedMovieId] = useState("");
+    const [modalContent, setModalContent] = useState("");
+
     return (
         <div className="flex">
             <SideBar className="flex-1" />
@@ -44,9 +305,6 @@ const ManageMovie = () => {
                         <thead>
                             <tr>
                                 <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                    <input type="checkbox" name="" id="" />
-                                </th>
-                                <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                     STT
                                 </th>
                                 <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
@@ -73,96 +331,69 @@ const ManageMovie = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <input type="checkbox" name="" id="" />
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    1
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Avengers: Cuộc Chiến Vô Cực
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <img
-                                        src="https://phimimg.com/upload/vod/20231017-1/10f639784f3649266cb10a285280011a.jpg"
-                                        alt=""
-                                        className="h-32 w-32 object-cover"
-                                    />
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    149 phút
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    2018
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Phiêu lưu, Hành động, Khoa học
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Anthony Russo
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <a
-                                        href="#!"
-                                        className="rounded-md bg-[#007bff] p-2 text-white"
-                                    >
-                                        Sửa
-                                    </a>
-                                    <a
-                                        href="#!"
-                                        className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
-                                    >
-                                        Xóa
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <input type="checkbox" name="" id="" />
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    2
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Sự Trả Thù Của Nàng Bạch Tuyết
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <img
-                                        src="https://phimimg.com/upload/vod/20241003-1/97e19e6a4261278ddd5fa8f4da5c4e49.jpg"
-                                        alt=""
-                                        className="h-32 w-32 object-cover"
-                                    />
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    33 phút/tập
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    2024
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Chính kịch, Gia đình, Tình cảm, tâm lý
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    Choi Ji-young
-                                </td>
-                                <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                    <a
-                                        href="#!"
-                                        className="rounded-md bg-[#007bff] p-2 text-white"
-                                    >
-                                        Sửa
-                                    </a>
-                                    <a
-                                        href="#!"
-                                        className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
-                                    >
-                                        Xóa
-                                    </a>
-                                </td>
-                            </tr>
+                            {movies.map((movie, index) => (
+                                <tr key={movie.id}>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {index + 1}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {movie.name}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        <img
+                                            src={movie.posterUrl}
+                                            alt=""
+                                            className="h-32 w-32 object-cover"
+                                        />
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {movie.time}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {movie.year}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {(movie.genres || [])
+                                            .map((item) => item.name)
+                                            .join(", ")}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {(movie.director || []).join(", ")}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        <a
+                                            href="#!"
+                                            className="rounded-md bg-[#007bff] p-2 text-white"
+                                        >
+                                            Sửa
+                                        </a>
+                                        <a
+                                            href="#!"
+                                            className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
+                                            onClick={() => {
+                                                setShowModal(true);
+                                                setDeletedMovieId(movie.id);
+                                                setModalContent(
+                                                    `phim ${movie.name}`,
+                                                );
+                                            }}
+                                        >
+                                            Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
+                    {showModal && (
+                        <Modal
+                            setShowModal={setShowModal}
+                            deletedItemId={deletedMovieId}
+                            listItem={movies}
+                            setListItem={setMovies}
+                            content={modalContent}
+                        />
+                    )}
                 </div>
             </section>
         </div>
