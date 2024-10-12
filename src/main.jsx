@@ -15,6 +15,7 @@ import SignUp from "@pages/SignUp";
 import ManageMovie from "@pages/Admin/Movie/ManageMovie";
 import CreateMovie from "@pages/Admin/Movie/CreateMovie";
 import EditMovie from "@pages/Admin/Movie/EditMovie";
+import UserProfile from "@pages/UserProfile";
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
     {
         path: "/sign-up",
         element: <SignUp />,
+    },
+    {
+        path: "/profile",
+        element: <UserProfile />,
     },
     {
         path: "/admin/movie",
