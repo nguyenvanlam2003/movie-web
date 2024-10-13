@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faFilm, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Spinner from "@/components/Spinner";
 import CircularProgressBar from "@components/CircularProgressBar";
+import { useModalContext } from "@context/ModalProvider";
 
 const MovieDetail = () => {
     const { slug } = useParams();
     const [movieInfo, setMovieInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
+    const { handlePlayTrailer } = useModalContext();
 
     useEffect(() => {
         setIsLoading(true);
@@ -31,7 +34,7 @@ const MovieDetail = () => {
             ) : (
                 <div className="mx-auto max-w-screen-xl">
                     <div className="relative py-3">
-                        <figure className="h-[450px]">
+                        <figure className="h-[480px] lg:h-[450px]">
                             <img
                                 src={movieInfo?.thumb_url}
                                 width={1280}
@@ -51,56 +54,92 @@ const MovieDetail = () => {
                             <div className="flex items-center gap-[10px]">
                                 {movieInfo?.tmdb?.vote_average ? (
                                     <div className="flex items-center gap-1">
-                                        <CircularProgressBar percent={Math.round(movieInfo?.tmdb?.vote_average * 10)} />
-                                        <span className="text-white">Rating</span>
+                                        <CircularProgressBar
+                                            percent={Math.round(
+                                                movieInfo?.tmdb?.vote_average *
+                                                    10,
+                                            )}
+                                        />
+                                        <span className="text-white">
+                                            Rating
+                                        </span>
                                     </div>
                                 ) : null}
                                 <ul className="flex flex-wrap gap-2">
-                                    {(movieInfo.category || []).slice(0, 3).map((genre) => (
-                                        <li
-                                            key={genre.id}
-                                            className="rounded-lg bg-white p-[6px] text-sm font-medium text-black"
-                                        >
-                                            {genre.name}
-                                        </li>
-                                    ))}
+                                    {(movieInfo.category || [])
+                                        .slice(0, 3)
+                                        .map((genre) => (
+                                            <li
+                                                key={genre.id}
+                                                className="rounded-lg bg-white p-[6px] text-sm font-medium text-black"
+                                            >
+                                                {genre.name}
+                                            </li>
+                                        ))}
                                 </ul>
                             </div>
                             <div className="left-5 mt-2 flex flex-wrap items-center gap-2 sm:mt-3">
+                                <button
+                                    className="flex h-10 items-center justify-center gap-2 rounded-full bg-black px-3 font-medium text-white"
+                                    onClick={() => {
+                                        handlePlayTrailer(
+                                            movieInfo?.trailer_url,
+                                        );
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faFilm} />
+                                    Xem Trailer
+                                </button>
                                 <a
                                     href={`/watch/${movieInfo.slug}`}
                                     className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ffb700] px-5 font-medium text-[#171c28]"
                                 >
-                                    <FontAwesomeIcon icon={faPlay} className="text-white" />
+                                    <FontAwesomeIcon
+                                        icon={faPlay}
+                                        className="text-white"
+                                    />
                                     Xem ngay
                                 </a>
                                 <button className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
-                                    <img src="/add.svg" alt="" />
+                                    <img
+                                        src="/heart.svg"
+                                        alt=""
+                                        className="invert"
+                                    />
                                     Thêm vào yêu thích
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div className="mt-3 space-y-2 text-base text-white lg:text-lg">
-                        <h1 className="text-3xl font-bold lg:text-4xl">{movieInfo?.name}</h1>
+                        <h1 className="text-3xl font-bold lg:text-4xl">
+                            {movieInfo?.name}
+                        </h1>
                         <p>
-                            <span className="font-medium">Thời gian:</span> {movieInfo?.time}
+                            <span className="font-medium">Thời gian:</span>{" "}
+                            {movieInfo?.time}
                         </p>
                         <p>
-                            <span className="font-medium">Năm phát hành:</span> {movieInfo?.year}
+                            <span className="font-medium">Năm phát hành:</span>{" "}
+                            {movieInfo?.year}
                         </p>
                         <p>
                             <span className="font-medium">Thể loại:</span>{" "}
-                            {(movieInfo?.category || []).map((genre) => genre.name).join(", ")}
+                            {(movieInfo?.category || [])
+                                .map((genre) => genre.name)
+                                .join(", ")}
                         </p>
                         <p>
-                            <span className="font-medium">Nội dung:</span> {movieInfo?.content}
+                            <span className="font-medium">Nội dung:</span>{" "}
+                            {movieInfo?.content}
                         </p>
                         <p>
-                            <span className="font-medium">Đạo diễn:</span> {(movieInfo?.director || []).join(", ")}
+                            <span className="font-medium">Đạo diễn:</span>{" "}
+                            {(movieInfo?.director || []).join(", ")}
                         </p>
                         <p>
-                            <span className="font-medium">Diễn viên:</span> {(movieInfo?.actor || []).join(", ")}
+                            <span className="font-medium">Diễn viên:</span>{" "}
+                            {(movieInfo?.actor || []).join(", ")}
                         </p>
                     </div>
                 </div>

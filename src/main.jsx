@@ -16,6 +16,7 @@ import ManageMovie from "@pages/Admin/Movie/ManageMovie";
 import CreateMovie from "@pages/Admin/Movie/CreateMovie";
 import EditMovie from "@pages/Admin/Movie/EditMovie";
 import UserProfile from "@pages/UserProfile";
+import ModalProvider from "./context/ModalProvider";
 
 const router = createBrowserRouter([
     {
@@ -79,6 +80,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <ModalProvider>
+            <RouterProvider router={router} />
+        </ModalProvider>
     </StrictMode>,
 );
