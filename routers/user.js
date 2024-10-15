@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const verify = require('../verifyToken');
+const CryptoJS = require("crypto-js");
 
 //get all user
 /**
@@ -134,19 +135,12 @@ router.get("/find/:id", verify, async (req, res) => {
 //update
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/users/:
  *   put:
  *     summary: Cập nhật thông tin người dùng
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []  # Sử dụng xác thực token JWT
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của người dùng cần cập nhật
  *     requestBody:
  *       required: true
  *       content:
@@ -154,6 +148,8 @@ router.get("/find/:id", verify, async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
+ *               _id: 
+ *                 type: string 
  *               username:
  *                 type: string
  *                 description: Tên người dùng (không bắt buộc)
@@ -163,6 +159,9 @@ router.get("/find/:id", verify, async (req, res) => {
  *               password:
  *                 type: string
  *                 description: Mật khẩu mới (nếu có)
+ *               avatar:
+ *                 type: string
+ *                 description: avatar mới (nếu có)
  *               isAdmin:
  *                 type: boolean
  *                 description: Xác định xem người dùng có phải là admin hay không (chỉ admin có thể thay đổi)
@@ -181,6 +180,8 @@ router.get("/find/:id", verify, async (req, res) => {
  *                   type: string
  *                 email:
  *                   type: string
+ *                 avatar:
+ *                   type: string
  *                 isAdmin:
  *                   type: boolean
  *                 createdAt:
@@ -195,22 +196,39 @@ router.get("/find/:id", verify, async (req, res) => {
  *         description: Lỗi máy chủ
  */
 
-router.put("/:id", verify, async (req, res) => {
+router.put("/", verify, async (req, res) => {
     try {
-        if (req.user.id === req.params.id || req.user.isAdmin) {
+        if (req.user.id === req.body._id || req.user.isAdmin) {
+            // Kiểm tra nếu mật khẩu không rỗng và khác "string"
+            if (req.body.password && req.body.password !== "" && req.body.password !== "string") {
+                // Mã hóa mật khẩu mới
+                req.body.password = CryptoJS.AES.encrypt(
+                    req.body.password,
+                    process.env.SECRET_KEY
+                ).toString();
+            } else {
+                // Nếu mật khẩu không hợp lệ ("" hoặc "string"), xóa trường password để không cập nhật
+                delete req.body.password;
+            }
+
+            // Cập nhật user với các dữ liệu từ req.body
             const updatedUser = await User.findByIdAndUpdate(
-                req.params.id,
+                req.body._id,
                 { $set: req.body },
                 { new: true }
             );
+
             res.status(200).json(updatedUser);
         } else {
             res.status(403).json("Bạn chỉ có thể chỉnh sửa tài khoản của mình!");
         }
     } catch (err) {
+        console.error(err);
+
         res.status(500).json(err);
     }
 });
+
 
 
 //delete

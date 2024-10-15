@@ -5,14 +5,10 @@ const MovieSchema = new mongoose.Schema({
     slug: { type: String, default: "" },
     type: { type: String, default: "" },
     posterUrl: { type: String, default: "" },
-    thubUrl: { type: String, default: "" },
+    thumbUrl: { type: String, default: "" },
     year: { type: Number, default: 2000 },
-    acctor: [{
-        name: { type: String, default: "" }
-    }],
-    direcor: [{
-        name: { type: String, default: "" }
-    }],
+    acctor: { type: String },
+    direcor: { type: String },
     genres: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Genre"
@@ -20,6 +16,7 @@ const MovieSchema = new mongoose.Schema({
     time: { type: String, default: "" },
     trailerKey: { type: String, default: "" },
     episodes: [{
+        _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
         name: { type: String, default: "" },
         video: { type: String, default: "" },
     }]

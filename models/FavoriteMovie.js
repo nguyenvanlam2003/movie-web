@@ -1,12 +1,12 @@
-
 const mongoose = require("mongoose");
 
 const FavoriteMovieSchema = mongoose.Schema({
-    userId: { type: mongoose.Schema.ObjectId, ref: "User" },
-    movieIds: [{
-        type: mongoose.Schema.ObjectId, ref: "Movie"
-    }]
+    _id: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
+    movieIds: [
+        { type: mongoose.Schema.ObjectId, ref: "Movie" }
+    ]
 }, {
     timestamps: true,
-})
-module.exports = mongoose.model("FavoriteMovie", FavoriteMovieSchema)
+});
+
+module.exports = mongoose.model("FavoriteMovie", FavoriteMovieSchema);
