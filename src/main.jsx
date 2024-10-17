@@ -18,6 +18,7 @@ import EditMovie from "@pages/Admin/Movie/EditMovie";
 import UserProfile from "@pages/UserProfile";
 import ModalProvider from "./context/ModalProvider";
 import ManageComment from "@pages/Admin/ManageComment";
+import ManageUser from "@pages/Admin/User/ManageUser";
 
 const router = createBrowserRouter([
     {
@@ -80,6 +81,10 @@ const router = createBrowserRouter([
     {
         path: "/comment/:id",
         element: <ManageComment />,
+    },
+    {
+        path: "/admin/user",
+        element: <ManageUser />,
     },
 ]);
 
