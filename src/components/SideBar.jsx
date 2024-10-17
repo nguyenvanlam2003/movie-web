@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const SideBar = () => {
     return (
-        <aside className="bg-[#343a40] px-10 py-2 text-white shadow-sm shadow-slate-700">
+        <aside className="min-h-screen bg-[#343a40] px-10 py-2 text-white shadow-sm shadow-slate-700">
             <a href="#!">
                 <h1 className="text-2xl font-bold uppercase text-red-500">
                     MỌT PHIM
@@ -26,7 +26,10 @@ const SideBar = () => {
             <nav className="text-lg">
                 <ul className="space-y-5">
                     <li>
-                        <a href="#!" className="flex items-center gap-2">
+                        <a
+                            href="/admin/movie"
+                            className="flex items-center gap-2"
+                        >
                             <FontAwesomeIcon icon={faFilm} />
                             <p>Quản lý phim</p>
                         </a>

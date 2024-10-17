@@ -17,6 +17,7 @@ import CreateMovie from "@pages/Admin/Movie/CreateMovie";
 import EditMovie from "@pages/Admin/Movie/EditMovie";
 import UserProfile from "@pages/UserProfile";
 import ModalProvider from "./context/ModalProvider";
+import ManageComment from "@pages/Admin/ManageComment";
 
 const router = createBrowserRouter([
     {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/movie/edit",
         element: <EditMovie />,
+    },
+    {
+        path: "/comment/:id",
+        element: <ManageComment />,
     },
 ]);
 

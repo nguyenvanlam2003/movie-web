@@ -193,7 +193,7 @@ const ManageMovie = () => {
                     <table className="w-full border-collapse overflow-x-auto text-left">
                         <thead>
                             <tr>
-                                <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
+                                <th className="border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                     STT
                                 </th>
                                 <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
@@ -215,6 +215,9 @@ const ManageMovie = () => {
                                     Đạo diễn
                                 </th>
                                 <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
+                                    Bình luận
+                                </th>
+                                <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                     Chức năng
                                 </th>
                             </tr>
@@ -222,7 +225,7 @@ const ManageMovie = () => {
                         <tbody>
                             {filteredMovies.map((movie, index) => (
                                 <tr key={movie.id}>
-                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                    <td className="border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         {index + 1}
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
@@ -248,6 +251,14 @@ const ManageMovie = () => {
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         {(movie.director || []).join(", ")}
+                                    </td>
+                                    <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        <a
+                                            href={`/comment/${movie.id}`}
+                                            className="text-red-500"
+                                        >
+                                            Chi tiết(2)
+                                        </a>
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         <a
