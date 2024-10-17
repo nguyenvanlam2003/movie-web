@@ -7,6 +7,7 @@ const userRoutes = require("./routers/user.js")
 const genreRouter = require("./routers/genre.js")
 const movieRouter = require("./routers/movie.js")
 const favoriteRouter = require("./routers/favoriteMovie.js")
+const commentRouter = require("./routers/comment.js")
 const cors = require('cors');
 const dotenv = require("dotenv")
 
@@ -28,6 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/genres", genreRouter);
 app.use("/api/movies", movieRouter);
 app.use("/api/favoriteMovies", favoriteRouter);
+app.use("/api/comments", commentRouter)
 
 
 app.listen(port, () => {

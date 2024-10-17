@@ -133,7 +133,6 @@ const verify = require("../verifyToken");
  *         description: Lỗi máy chủ
  */
 
-
 router.post("/", verify, async (req, res) => {
     if (req.user.isAdmin) {
         const newMovie = new Movie(req.body);

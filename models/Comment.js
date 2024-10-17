@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 
 const CommentSchema = mongoose.Schema({
     content: { type: String, require: true },
-    userId: { type: mongoose.Schema.ObjectId, ref: "User" },
-    movieId: { type: mongoose.Schema.ObjectId, ref: "Movie" },
+    userId: { type: mongoose.Schema.ObjectId, ref: "User", require: true },
+    movieId: { type: mongoose.Schema.ObjectId, ref: "Movie", require: true },
     replies: [{
         _id: { type: mongoose.Schema.ObjectId, auto: true },
+        userId: { type: mongoose.Schema.ObjectId, ref: "User" },
         parentId: { type: mongoose.Schema.ObjectId, ref: "Comment" },
-        content: { type: String },
+        contentReplies: { type: String },
     }]
 }, {
     timestamps: true,
