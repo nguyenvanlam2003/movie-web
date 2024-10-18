@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const CreateMovie = () => {
-    const { handleSubmit, control, register, setValue } = useForm({
+    const { handleSubmit, control, register, setValue, reset } = useForm({
         defaultValues: {
             type: "single",
         },
@@ -19,6 +19,7 @@ const CreateMovie = () => {
 
     const onSubmit = (data) => {
         console.log({ formData: data });
+        reset();
     };
 
     const handleChangePoster = (e) => {

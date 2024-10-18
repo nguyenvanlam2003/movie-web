@@ -176,16 +176,10 @@ const ManageMovie = () => {
                         </form>
                         <div className="flex gap-2">
                             <a
-                                href="#!"
+                                href="/admin/movie/create"
                                 className="flex h-10 items-center justify-center rounded-lg bg-[#007bff] px-2 text-white"
                             >
                                 Thêm mới
-                            </a>
-                            <a
-                                href="#!"
-                                className="flex h-10 items-center justify-center rounded-lg bg-[#dc3545] px-2 text-white"
-                            >
-                                Xóa
                             </a>
                         </div>
                     </div>
@@ -262,8 +256,8 @@ const ManageMovie = () => {
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         <a
-                                            href="#!"
-                                            className="rounded-md bg-[#007bff] p-2 text-white"
+                                            href="/admin/movie/edit"
+                                            className="inline-block rounded-md bg-[#007bff] p-2 text-white"
                                         >
                                             Sửa
                                         </a>
@@ -274,7 +268,7 @@ const ManageMovie = () => {
                                                 setShowModal(true);
                                                 setDeletedMovieId(movie.id);
                                                 setModalContent(
-                                                    `phim ${movie.name}`,
+                                                    `phim "${movie.name}"`,
                                                 );
                                             }}
                                         >

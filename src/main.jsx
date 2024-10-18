@@ -20,6 +20,9 @@ import ModalProvider from "./context/ModalProvider";
 import ManageComment from "@pages/Admin/ManageComment";
 import ManageUser from "@pages/Admin/User/ManageUser";
 import EditUser from "@pages/Admin/User/EditUser";
+import ManageGenre from "@pages/Admin/Genre/ManageGenre";
+import CreateGenre from "@pages/Admin/Genre/CreateGenre";
+import EditGenre from "@pages/Admin/Genre/EditGenre";
 
 const router = createBrowserRouter([
     {
@@ -90,6 +93,18 @@ const router = createBrowserRouter([
     {
         path: "admin/user/edit",
         element: <EditUser />,
+    },
+    {
+        path: "/admin/genre",
+        element: <ManageGenre />,
+    },
+    {
+        path: "/admin/genre/create",
+        element: <CreateGenre />,
+    },
+    {
+        path: "/admin/genre/edit",
+        element: <EditGenre />,
     },
 ]);
 
