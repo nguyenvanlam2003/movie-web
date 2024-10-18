@@ -19,6 +19,7 @@ import UserProfile from "@pages/UserProfile";
 import ModalProvider from "./context/ModalProvider";
 import ManageComment from "@pages/Admin/ManageComment";
 import ManageUser from "@pages/Admin/User/ManageUser";
+import EditUser from "@pages/Admin/User/EditUser";
 
 const router = createBrowserRouter([
     {
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/user",
         element: <ManageUser />,
+    },
+    {
+        path: "admin/user/edit",
+        element: <EditUser />,
     },
 ]);
 

@@ -68,12 +68,6 @@ const ManageUser = () => {
                             >
                                 Thêm mới
                             </a>
-                            <a
-                                href="#!"
-                                className="flex h-10 items-center justify-center rounded-lg bg-[#dc3545] px-2 text-white"
-                            >
-                                Xóa
-                            </a>
                         </div>
                     </div>
 
@@ -126,7 +120,7 @@ const ManageUser = () => {
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         <a
-                                            href="#!"
+                                            href="/admin/user/edit"
                                             className="rounded-md bg-[#007bff] p-2 text-white"
                                         >
                                             Sửa

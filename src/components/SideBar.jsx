@@ -1,5 +1,4 @@
 import {
-    faCircle,
     faFilm,
     faRightFromBracket,
     faTableList,
@@ -41,11 +40,14 @@ const SideBar = () => {
                         </a>
                     </li>
                     <li>
-                        <div className="flex items-center gap-2">
+                        <a
+                            href="/admin/user"
+                            className="flex items-center gap-2"
+                        >
                             <FontAwesomeIcon icon={faUser} />
                             <p>Quản lý tài khoản</p>
-                        </div>
-                        <ul className="ml-4">
+                        </a>
+                        {/* <ul className="ml-4">
                             <li className="flex items-center gap-2 py-2">
                                 <FontAwesomeIcon
                                     icon={faCircle}
@@ -60,7 +62,7 @@ const SideBar = () => {
                                 />
                                 <a href="#!">Tài khoản User</a>
                             </li>
-                        </ul>
+                        </ul> */}
                     </li>
                     <li>
                         <a href="#!" className="flex items-center gap-2">
