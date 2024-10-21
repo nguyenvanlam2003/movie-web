@@ -119,13 +119,19 @@ const HeaderLogined = () => {
                         </div>
                         <ul className="mt-8">
                             <li>
-                                <a href="#!" className="inline-block py-2">
+                                <a
+                                    href="/profile"
+                                    className="inline-block py-2"
+                                >
                                     Trang cá nhân
                                 </a>
                             </li>
                             <li>
-                                <a href="#!" className="inline-block py-2">
-                                    Danh sách phim yêu thích
+                                <a
+                                    href="/favorite"
+                                    className="inline-block py-2"
+                                >
+                                    Danh sách yêu thích
                                 </a>
                             </li>
                             <li className="mt-3 border-t border-solid border-t-[#292e39] pt-3">

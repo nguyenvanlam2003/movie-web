@@ -23,6 +23,7 @@ import EditUser from "@pages/Admin/User/EditUser";
 import ManageGenre from "@pages/Admin/Genre/ManageGenre";
 import CreateGenre from "@pages/Admin/Genre/CreateGenre";
 import EditGenre from "@pages/Admin/Genre/EditGenre";
+import FavoriteList from "@pages/FavoriteList";
 
 const router = createBrowserRouter([
     {
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
             {
                 path: "/search",
                 element: <SearchPage />,
+            },
+            {
+                path: "/favorite",
+                element: <FavoriteList />,
             },
         ],
     },
