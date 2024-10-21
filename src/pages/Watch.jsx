@@ -13,7 +13,6 @@ const Watch = () => {
         fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`).then(
             async (res) => {
                 const data = await res.json();
-                console.log(data);
                 document.title = data?.movie.name;
                 setChapterList(data?.episodes[0]?.server_data);
                 setSrcMovie(

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Spinner from "@/components/Spinner";
 import CircularProgressBar from "@components/CircularProgressBar";
 import { useModalContext } from "@context/ModalProvider";
+import Comments from "@components/Comments";
 
 const MovieDetail = () => {
     const { slug } = useParams();
@@ -142,6 +143,8 @@ const MovieDetail = () => {
                             {(movieInfo?.actor || []).join(", ")}
                         </p>
                     </div>
+
+                    <Comments />
                 </div>
             )}
         </div>
