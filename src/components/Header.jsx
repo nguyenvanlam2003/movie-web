@@ -66,16 +66,6 @@ const Header = () => {
                                 Phim bộ
                             </a>
                         </li>
-                        {/* <li>
-                            <a
-                                href="/cartoon"
-                                className={`hidden md:text-lg lg:block lg:py-0 ${
-                                    showMenuDrawer ? "!inline-block py-3" : ""
-                                }`}
-                            >
-                                Phim hoạt hình
-                            </a>
-                        </li> */}
                         <li>
                             <a
                                 href="/search"
