@@ -4,31 +4,23 @@ import { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 
 const EpisodesInput = ({ onChange, control }) => {
-    const [episodes, setEpisodes] = useState([
-        // {
-        //     name: "Tập 01",
-        //     video: "https://s3.phim1280.tv/20240326/WqZirOhF/index.m3u8",
-        // },
-        // {
-        //     name: "Tập 02",
-        //     video: "https://s3.phim1280.tv/20240326/kYvE9gQE/index.m3u8",
-        // },
-    ]);
+    const [episodes, setEpisodes] = useState([]);
 
     const addEpisode = (e) => {
         e.preventDefault();
         setEpisodes([
             ...episodes,
             {
+                id: crypto.randomUUID(),
                 name: "",
                 video: "",
             },
         ]);
     };
 
-    const handleRemoveEpisode = (key) => {
-        const newEpisodes = episodes.filter((episode, index) => {
-            return index !== key;
+    const handleRemoveEpisode = (episodeId) => {
+        const newEpisodes = episodes.filter((episode) => {
+            return episode.id !== episodeId;
         });
         setEpisodes(newEpisodes);
     };
@@ -45,6 +37,7 @@ const EpisodesInput = ({ onChange, control }) => {
         if (movieType === "single") {
             setEpisodes([
                 {
+                    id: crypto.randomUUID(),
                     name: "",
                     video: "",
                 },
@@ -60,17 +53,17 @@ const EpisodesInput = ({ onChange, control }) => {
             ]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [movieType, JSON.stringify(episodes)]);
+    }, [movieType, episodes.length]);
+
+    useEffect(() => {
+        onChange(episodes);
+    }, [episodes, onChange]);
 
     return (
-        <div
-            onChange={() => {
-                onChange(episodes);
-            }}
-        >
+        <div>
             {episodes.map((episode, index) => (
                 <div
-                    key={index}
+                    key={episode.id}
                     className="relative border-b-2 border-t-2 border-[#e3e3e9] py-2"
                 >
                     <div className="mb-3">
@@ -114,7 +107,7 @@ const EpisodesInput = ({ onChange, control }) => {
                     {index !== 0 && (
                         <div
                             className="absolute right-0 top-1 cursor-pointer"
-                            onClick={() => handleRemoveEpisode(index)}
+                            onClick={() => handleRemoveEpisode(episode.id)}
                         >
                             <FontAwesomeIcon
                                 icon={faCircleXmark}
