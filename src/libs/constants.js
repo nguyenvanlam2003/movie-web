@@ -26,8 +26,4 @@ export const MEDIA_TABS = [
         title: "PHIM BỘ",
         url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/phim-bo?limit=18&page=2`,
     },
-    {
-        title: "Phim hoạt hình đề cử",
-        url: `${import.meta.env.VITE_API_HOST}/v1/api/danh-sach/hoat-hinh?limit=18&page=2`,
-    },
 ];

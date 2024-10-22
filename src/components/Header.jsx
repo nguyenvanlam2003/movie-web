@@ -19,7 +19,10 @@ const Header = () => {
             </button>
             <div className="flex items-center">
                 <h1 className="absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] lg:static lg:translate-x-0 lg:translate-y-0">
-                    <a href="/" className="text-2xl font-bold uppercase text-red-500 md:text-3xl">
+                    <a
+                        href="/"
+                        className="text-2xl font-bold uppercase text-red-500 md:text-3xl"
+                    >
                         Mọt phim
                     </a>
                 </h1>
@@ -30,7 +33,9 @@ const Header = () => {
                             : ""
                     }`}
                 >
-                    <button className={`hidden px-5 pb-3 ${showMenuDrawer ? "!block" : ""}`}>
+                    <button
+                        className={`hidden px-5 pb-3 ${showMenuDrawer ? "!block" : ""}`}
+                    >
                         <img
                             src="/back.svg"
                             alt=""
@@ -61,7 +66,7 @@ const Header = () => {
                                 Phim bộ
                             </a>
                         </li>
-                        <li>
+                        {/* <li>
                             <a
                                 href="/cartoon"
                                 className={`hidden md:text-lg lg:block lg:py-0 ${
@@ -70,7 +75,7 @@ const Header = () => {
                             >
                                 Phim hoạt hình
                             </a>
-                        </li>
+                        </li> */}
                         <li>
                             <a
                                 href="/search"
@@ -93,7 +98,10 @@ const Header = () => {
                 </a>
             </div>
             <div className="flex items-center gap-5">
-                <a href="/sign-in" className="hidden items-center justify-center px-5 lg:flex lg:h-11 lg:text-lg">
+                <a
+                    href="/sign-in"
+                    className="hidden items-center justify-center px-5 lg:flex lg:h-11 lg:text-lg"
+                >
                     Đăng nhập
                 </a>
                 <a
@@ -106,7 +114,9 @@ const Header = () => {
 
             <div
                 className={`hidden opacity-0 ${
-                    showMenuDrawer ? "fixed inset-0 z-[9] !block bg-black/30 opacity-100 transition-opacity" : ""
+                    showMenuDrawer
+                        ? "fixed inset-0 z-[9] !block bg-black/30 opacity-100 transition-opacity"
+                        : ""
                 }`}
                 onClick={() => {
                     setShowMenuDrawer(false);
