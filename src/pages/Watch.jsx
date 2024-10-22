@@ -10,13 +10,17 @@ const Watch = () => {
     const [currentChap, setCurrentChap] = useState(0);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`).then(async (res) => {
-            const data = await res.json();
-            document.title = data?.movie.name;
-            setChapterList(data?.episodes[0]?.server_data);
-            setSrcMovie(data?.episodes[0]?.server_data[currentChap]?.link_m3u8);
-            setMovieInfo(data?.movie);
-        });
+        fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`).then(
+            async (res) => {
+                const data = await res.json();
+                document.title = data?.movie.name;
+                setChapterList(data?.episodes[0]?.server_data);
+                setSrcMovie(
+                    data?.episodes[0]?.server_data[currentChap]?.link_m3u8,
+                );
+                setMovieInfo(data?.movie);
+            },
+        );
     }, [slug, currentChap]);
 
     useEffect(() => {
@@ -52,7 +56,11 @@ const Watch = () => {
                 <div className="mt-5 flex flex-col gap-2 md:flex-row">
                     <div className="flex-[3]">
                         <div className="relative w-full bg-black pt-[56.25%]">
-                            <video className="absolute left-0 top-0 h-full w-full" id="film-video" controls></video>
+                            <video
+                                className="absolute left-0 top-0 h-full w-full"
+                                id="film-video"
+                                controls
+                            ></video>
                         </div>
                     </div>
                     <div className="flex-1">
@@ -63,11 +71,15 @@ const Watch = () => {
                                     <li
                                         key={chap.link_m3u8}
                                         className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg ${
-                                            currentChap === index ? "bg-green-700" : "bg-[#292e39]"
+                                            currentChap === index
+                                                ? "bg-green-700"
+                                                : "bg-[#292e39]"
                                         }`}
                                         onClick={() => {
                                             setCurrentChap(index);
-                                            setSrcMovie(chapterList[index].link_m3u8);
+                                            setSrcMovie(
+                                                chapterList[index].link_m3u8,
+                                            );
                                         }}
                                     >
                                         {index + 1}
@@ -83,7 +95,9 @@ const Watch = () => {
                         <p>{movieInfo.time}</p>
                     </div>
                     <div className="flex gap-2">
-                        <p className="whitespace-nowrap font-medium">Nội dung:</p>
+                        <p className="whitespace-nowrap font-medium">
+                            Nội dung:
+                        </p>
                         <p>{movieInfo.content}</p>
                     </div>
                 </div>
