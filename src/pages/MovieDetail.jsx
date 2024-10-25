@@ -6,6 +6,8 @@ import Spinner from "@/components/Spinner";
 import CircularProgressBar from "@components/CircularProgressBar";
 import { useModalContext } from "@context/ModalProvider";
 import Comments from "@components/Comments";
+import Toast from "@components/Toast/Toast";
+import { showSuccessToast } from "@components/Toast/Toast";
 
 const MovieDetail = () => {
     const { slug } = useParams();
@@ -101,7 +103,15 @@ const MovieDetail = () => {
                                     />
                                     Xem ngay
                                 </a>
-                                <button className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
+                                <button
+                                    className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white"
+                                    onClick={() =>
+                                        showSuccessToast(
+                                            "Thành công",
+                                            "Bạn đã thêm phim vào danh sách yêu thích",
+                                        )
+                                    }
+                                >
                                     <img
                                         src="/heart.svg"
                                         alt=""
@@ -145,6 +155,7 @@ const MovieDetail = () => {
                     </div>
 
                     <Comments />
+                    <Toast />
                 </div>
             )}
         </div>
