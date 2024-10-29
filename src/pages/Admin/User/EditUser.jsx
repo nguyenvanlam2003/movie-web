@@ -1,28 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormField from "@components/AdminForm/FormField";
 import AccountTypeInput from "@components/AdminForm/FormInput/AccountTypeInput";
 import SideBar from "@components/SideBar";
+import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const EditUser = () => {
+    const navigate = useNavigate();
     const { handleSubmit, register, control, setValue } = useForm();
+    const { id } = useParams();
+    const [userName, setUserName] = useState("");
+    const [email, setEmail] = useState("");
+    const [avatarPreview, setAvatarPreview] = useState("");
 
-    const onSubmit = (data) => {
-        console.log(data);
+
+
+    // Hàm fetch dữ liệu người dùng từ API
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = Cookies.get("accessToken");
+                const response = await axios.get(`http://localhost:8080/api/users/find/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const userData = response.data;
+                // Cập nhật state với dữ liệu người dùng
+                setUserName(userData.username);
+                setEmail(userData.email);
+                setAvatarPreview(userData.avatar ? "http://localhost:8080/images/avatar/" + userData.avatar : "/img-placeholder.jpg"); // Nếu có avatar từ DB
+                setValue("username", userData.username);
+                setValue("email", userData.email);
+                setValue("isAdmin", userData.isAdmin);
+
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            }
+        };
+        fetchUser();
+    }, [id, setValue]);
+
+    const onSubmit = async (data) => {
+        const token = Cookies.get("accessToken");
+
+        try {
+            const formData = new FormData();
+
+            // Thêm các trường dữ liệu khác vào formData
+            formData.append("_id", id);
+            formData.append("username", data.username);
+            formData.append("email", data.email);
+            formData.append("isAdmin", data.isAdmin);
+
+            // Nếu có ảnh mới, thêm file vào formData
+            if (data.avatar) {
+                formData.append("avatar", data.avatar[0]);  // data.avatar[0] vì file là array
+            }
+
+            const response = await axios.put(
+                "http://localhost:8080/api/users/",
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",  // Đảm bảo header phù hợp
+                    },
+                }
+            );
+            console.log(formData);
+
+            //navigate("/admin/user")
+        } catch (error) {
+            console.error("Error updating user:", error);
+        }
     };
 
-    const [userName, setUserName] = useState("user name");
-    const [fullName, setFullName] = useState("Full Name");
-    const [email, setEmail] = useState("test@gmail.com");
-
-    const [avatarPreview, setAvatarPreview] = useState("/img-placeholder.jpg");
 
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setAvatarPreview(previewUrl);
-            setValue("avatar", file, { shouldValidate: true });
+            setValue("avatar", e.target.files);
         }
     };
 
@@ -54,29 +117,12 @@ const EditUser = () => {
                                 Tên người dùng
                             </label>
                             <input
-                                id="user-name"
-                                {...register("user-name")}
+                                id="username"
+                                {...register("username")}
                                 type="text"
                                 placeholder="Nhập tên người dùng"
                                 value={userName}
                                 onChange={(e) => setUserName(e.target.value)}
-                                className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label
-                                htmlFor="full-name"
-                                className="mb-1 block font-bold"
-                            >
-                                Tên đầy đủ
-                            </label>
-                            <input
-                                id="full-name"
-                                {...register("fullName")}
-                                type="text"
-                                placeholder="Nhập tên gốc phim"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>
@@ -126,6 +172,7 @@ const EditUser = () => {
                                 label="Quyền"
                                 name="isAdmin"
                                 control={control}
+                                defaultValue={setValue}
                                 Component={AccountTypeInput}
                             />
                         </div>

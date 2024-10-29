@@ -5,6 +5,7 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ManageMovie = () => {
+    
     const [movies, setMovies] = useState([
         {
             id: crypto.randomUUID(),

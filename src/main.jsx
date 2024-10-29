@@ -8,7 +8,6 @@ import MovieDetail from "@pages/MovieDetail";
 import Watch from "@pages/Watch";
 import SingleMovie from "@pages/SingleMovie";
 import TVSeries from "@pages/TVSeries";
-import CartoonMovie from "@pages/CartoonMovie";
 import SearchPage from "@pages/SearchPage";
 import SignIn from "@pages/SignIn";
 import SignUp from "@pages/SignUp";
@@ -24,7 +23,7 @@ import ManageGenre from "@pages/Admin/Genre/ManageGenre";
 import CreateGenre from "@pages/Admin/Genre/CreateGenre";
 import EditGenre from "@pages/Admin/Genre/EditGenre";
 import FavoriteList from "@pages/FavoriteList";
-
+import AdminRouter from "./AdminRouter"
 const router = createBrowserRouter([
     {
         element: <Root />,
@@ -50,10 +49,6 @@ const router = createBrowserRouter([
                 element: <TVSeries />,
             },
             {
-                path: "/cartoon",
-                element: <CartoonMovie />,
-            },
-            {
                 path: "/search",
                 element: <SearchPage />,
             },
@@ -77,15 +72,15 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin/movie",
-        element: <ManageMovie />,
+        element: <AdminRouter element={<ManageMovie />} />,
     },
     {
         path: "/admin/movie/create",
-        element: <CreateMovie />,
+        element: <AdminRouter element={<CreateMovie />} />,
     },
     {
         path: "/admin/movie/edit",
-        element: <EditMovie />,
+        element: <AdminRouter element={<EditMovie />} />,
     },
     {
         path: "/comment/:id",
@@ -93,23 +88,23 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin/user",
-        element: <ManageUser />,
+        element: <AdminRouter element={<ManageUser />} />,
     },
     {
-        path: "admin/user/edit",
-        element: <EditUser />,
+        path: "admin/user/edit/:id",
+        element: <AdminRouter element={<EditUser />} />,
     },
     {
         path: "/admin/genre",
-        element: <ManageGenre />,
+        element: <AdminRouter element={<ManageGenre />} />,
     },
     {
         path: "/admin/genre/create",
-        element: <CreateGenre />,
+        element: <AdminRouter element={<CreateGenre />} />,
     },
     {
-        path: "/admin/genre/edit",
-        element: <EditGenre />,
+        path: "/admin/genre/edit/:id",
+        element: <AdminRouter element={<EditGenre />} />,
     },
 ]);
 
