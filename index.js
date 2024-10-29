@@ -10,6 +10,8 @@ const favoriteRouter = require("./routers/favoriteMovie.js")
 const commentRouter = require("./routers/comment.js")
 const cors = require('cors');
 const dotenv = require("dotenv")
+const path = require('path');
+
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ app.use("/api/genres", genreRouter);
 app.use("/api/movies", movieRouter);
 app.use("/api/favoriteMovies", favoriteRouter);
 app.use("/api/comments", commentRouter)
+// Route để lấy ảnh từ thư mục images
+app.use('/images/avatar', express.static(path.join(__dirname, 'images', 'avatar')));
 
 
 app.listen(port, () => {

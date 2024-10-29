@@ -119,9 +119,9 @@ router.post("/login", async (req, res) => {
 
         // Tạo accessToken
         const accesstoken = jwt.sign(
-            { id: user._id, isAdmin: user.isAdmin }, // Payload chứa thông tin cần thiết
+            { id: user._id, userName: user.username, email: user.email, avatar: user.avatar, isAdmin: user.isAdmin, password: user.password }, // Payload chứa thông tin cần thiết
             process.env.SECRET_KEY, // Mật khẩu bí mật (đặt trong .env)
-            { expiresIn: "5h" } // Thời gian hết hạn token
+            { expiresIn: "5d" } // Thời gian hết hạn token
         );
         const { password, ...info } = user._doc;// loai bo password khi tra ve du lieu
         res.status(200).json({ ...info, accesstoken })

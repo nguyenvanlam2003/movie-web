@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const verify = require('../verifyToken');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const CryptoJS = require("crypto-js");
 
 //get all user
@@ -101,6 +104,8 @@ router.get("/", verify, async (req, res) => {
  *                   type: string
  *                 email:
  *                   type: string
+ *                 password:
+ *                   type: string
  *                 avatar:
  *                   type: string
  *                 isAdmin:
@@ -121,8 +126,7 @@ router.get("/find/:id", verify, async (req, res) => {
     try {
         if (req.user.id === req.params.id || req.user.isAdmin) {
             const user = await User.findById(req.params.id);
-            const { password, ...info } = user._doc;
-            res.status(200).json(info)
+            res.status(200).json(user)
         }
         else {
             res.status(403).json("Bạn chỉ có thể xem tài khoản của mình!");
@@ -133,6 +137,26 @@ router.get("/find/:id", verify, async (req, res) => {
 })
 
 //update
+// Đường dẫn đến thư mục images/avatar trong thư mục gốc của dự án
+const avatarDir = path.join(__dirname, '..', 'images', 'avatar');
+
+// Tạo thư mục nếu chưa tồn tại
+if (!fs.existsSync(avatarDir)) {
+    fs.mkdirSync(avatarDir, { recursive: true });
+}
+
+// Cấu hình storage cho multer
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, avatarDir); // Đặt đường dẫn đến thư mục images/avatar
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Tạo tên file duy nhất
+    }
+});
+
+const upload = multer({ storage: storage });
 /**
  * @swagger
  * /api/users/:
@@ -196,7 +220,8 @@ router.get("/find/:id", verify, async (req, res) => {
  *         description: Lỗi máy chủ
  */
 
-router.put("/", verify, async (req, res) => {
+
+router.put("/", verify, upload.single('avatar'), async (req, res) => {
     try {
         if (req.user.id === req.body._id || req.user.isAdmin) {
             // Kiểm tra nếu mật khẩu không rỗng và khác "string"
@@ -210,6 +235,20 @@ router.put("/", verify, async (req, res) => {
                 // Nếu mật khẩu không hợp lệ ("" hoặc "string"), xóa trường password để không cập nhật
                 delete req.body.password;
             }
+            // Nếu có ảnh mới, kiểm tra xem ảnh cũ có tồn tại không
+            const findUser = await User.findById(req.body._id)
+            if (req.file) {
+                const oldAvatarPath = path.join(avatarDir, findUser.avatar); // Đường dẫn cũ đến ảnh
+
+                // Kiểm tra xem ảnh cũ có tồn tại không
+                if (findUser.avatar && fs.existsSync(oldAvatarPath)) {
+                    // Nếu có, xóa ảnh cũ
+                    fs.unlinkSync(oldAvatarPath);
+                }
+                // Lưu tên file mới vào DB
+                req.body.avatar = req.file.filename;
+            }
+            console.log(req.body);
 
             // Cập nhật user với các dữ liệu từ req.body
             const updatedUser = await User.findByIdAndUpdate(
@@ -217,6 +256,7 @@ router.put("/", verify, async (req, res) => {
                 { $set: req.body },
                 { new: true }
             );
+            console.log(updatedUser);
 
             res.status(200).json(updatedUser);
         } else {
@@ -232,8 +272,6 @@ router.put("/", verify, async (req, res) => {
 
 
 //delete
-
-
 
 /**
  * @swagger
@@ -269,7 +307,15 @@ router.delete("/:id", verify, async (req, res) => {
             if (!deletedUser) {
                 return res.status(404).json("Người dùng không tồn tại!");
             }
+            if (deletedUser.avatar) {  // Kiểm tra avatar tồn tại
+                const oldAvatarPath = path.join(avatarDir, deletedUser.avatar); // Đường dẫn cũ đến ảnh
 
+                // Kiểm tra xem ảnh cũ có tồn tại không
+                if (fs.existsSync(oldAvatarPath)) {
+                    // Nếu có, xóa ảnh cũ
+                    fs.unlinkSync(oldAvatarPath);
+                }
+            }
             res.status(200).json("Đã xóa người dùng thành công.");
         } else {
             res.status(403).json("Bạn chỉ có thể xóa tài khoản của mình!");

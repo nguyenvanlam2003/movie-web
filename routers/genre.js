@@ -59,6 +59,7 @@ const verify = require('../verifyToken');
 router.post("/", verify, async (req, res) => {
     if (req.user.isAdmin) {
         const newGenre = new Genre(req.body);
+        console.log(req.body);
         try {
             const saveGenre = await newGenre.save();
             res.status(201).json(saveGenre);
