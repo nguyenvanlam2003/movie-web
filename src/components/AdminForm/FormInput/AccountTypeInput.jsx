@@ -7,8 +7,8 @@ const AccountTypeInput = ({ onChange, value }) => {
                     name="isAdmin"
                     id="admin-type"
                     value={true}
-                    // checked={value === true}
-                    onChange={onChange}
+                    checked={value === true}
+                    onChange={() => onChange(true)}
                 />
                 <label htmlFor="admin-type">Admin</label>
             </div>
@@ -18,8 +18,8 @@ const AccountTypeInput = ({ onChange, value }) => {
                     name="isAdmin"
                     id="user-type"
                     value={false}
-                    // checked={!value}
-                    onChange={onChange}
+                    checked={value === false}
+                    onChange={() => onChange(false)}
                 />
                 <label htmlFor="user-type">User</label>
             </div>

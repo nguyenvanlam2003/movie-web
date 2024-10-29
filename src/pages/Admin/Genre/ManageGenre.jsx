@@ -2,29 +2,45 @@ import Modal from "@components/Modal";
 import SideBar from "@components/SideBar";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import axios from 'axios';
 
 const ManageGenre = () => {
     const [genres, setGenres] = useState([
-        {
-            id: crypto.randomUUID(),
-            nameGenre: "Chính kịch",
-            desc: "chinh-kich",
-        },
-        {
-            id: crypto.randomUUID(),
-            nameGenre: "Hành động",
-            desc: "hanh-dong",
-        },
+        // {
+        //     id: crypto.randomUUID(),
+        //     nameGenre: "Chính kịch",
+        //     desc: "chinh-kich",
+        // },
+        // {
+        //     id: crypto.randomUUID(),
+        //     nameGenre: "Hành động",
+        //     desc: "hanh-dong",
+        // },
     ]);
+    useEffect(() => {
+        // Gọi API để lấy dữ liệu
+        const fetchGenres = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/genres');
+                setGenres(response.data); // Thay thế toàn bộ state bằng dữ liệu từ API
+            } catch (error) {
+                console.error("Error fetching genres:", error);
+            }
+        };
+
+        fetchGenres(); // Gọi hàm để lấy dữ liệu khi component mount
+    }, []);
+
+    console.log(genres);
     const [showModal, setShowModal] = useState(false);
     const [deletedUserId, setDeletedUserId] = useState("");
     const [modalContent, setModalContent] = useState("");
     const [searchText, setSearchText] = useState("");
 
     const filteredGenres = useMemo(() => {
-        return genres.filter((genre) => {
-            return genre.nameGenre.includes(searchText);
+        return (genres || []).filter((genre) => {
+            return (genre?.nameGenre ?? "").includes(searchText);
         });
     }, [searchText, genres]);
     return (
@@ -83,8 +99,8 @@ const ManageGenre = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredGenres.map((genre, index) => (
-                                <tr key={genre.id}>
+                            {(filteredGenres || []).map((genre, index) => (
+                                <tr key={genre._id}>
                                     <td className="border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         {index + 1}
                                     </td>
@@ -96,7 +112,7 @@ const ManageGenre = () => {
                                     </td>
                                     <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                         <a
-                                            href="/admin/genre/edit"
+                                            href={`/admin/genre/edit/${genre._id}`}
                                             className="inline-block rounded-md bg-[#007bff] p-2 text-white"
                                         >
                                             Sửa

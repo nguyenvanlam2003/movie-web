@@ -1,17 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import SideBar from "@components/SideBar";
+import axios from 'axios'
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const EditGenre = () => {
-    const { handleSubmit, register, reset } = useForm();
-
-    const onSubmit = (data) => {
-        console.log({ formData: data });
-        reset();
+    const { handleSubmit, register, reset, setValue } = useForm();
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const token = Cookies.get("accessToken");
+    const onSubmit = async (data) => {
+        try {
+            const response = await axios.put(
+                "http://localhost:8080/api/genres/",
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            navigate("/admin/genre")
+        } catch (error) {
+            console.error("Error updating genre:", error);
+        }
     };
 
-    const [nameGenre, setNameGenre] = useState("Hành động");
-    const [desc, setDesc] = useState("hanh-dong");
+    const [nameGenre, setNameGenre] = useState("");
+    const [desc, setDesc] = useState("");
+
+    // Hàm fetch dữ liệu người dùng từ API
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/genres/find/${id}`);
+                const genreData = response.data;
+                // Cập nhật state với dữ liệu người dùng
+                setNameGenre(genreData.nameGenre);
+                setDesc(genreData.desc);
+
+                setValue("nameGenre", genreData.nameGenre);
+                setValue("desc", genreData.desc);
+
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            }
+        };
+        fetchUser();
+    }, [id, setValue]);
 
     return (
         <div className="flex bg-[#f9f9fb]">
@@ -40,6 +78,8 @@ const EditGenre = () => {
                             >
                                 Tên thể loại
                             </label>
+
+                            <input {...register("_id")} value={id} hidden />
                             <input
                                 id="nameGenre"
                                 {...register("nameGenre")}
