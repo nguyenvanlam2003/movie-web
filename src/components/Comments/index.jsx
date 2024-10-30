@@ -11,48 +11,79 @@ import Comment from "./Comment";
 const Comments = () => {
     const [backendComments, setBackendComments] = useState([]);
     const [activeComment, setActiveComment] = useState(null);
-    const rootComments = backendComments.filter(
-        (backendComment) => backendComment.parentId === null,
-    );
-
-    const getReplies = (commentId) =>
-        backendComments
-            .filter((backendComment) => backendComment.parentId === commentId)
-            .sort(
-                (a, b) =>
-                    new Date(a.createdAt).getTime() -
-                    new Date(b.createdAt).getTime(),
-            );
-
     const addComment = (text, parentId) => {
-        createCommentApi(text, parentId).then((comment) => {
-            setBackendComments([comment, ...backendComments]);
-            setActiveComment(null);
-        });
-    };
-
-    const updateComment = (text, commentId) => {
-        updateCommentApi(text).then(() => {
-            const updatedBackendComments = backendComments.map(
-                (backendComment) => {
-                    if (backendComment.id === commentId) {
-                        return { ...backendComment, body: text };
+        createCommentApi(text, parentId, backendComments).then((comment) => {
+            if (parentId) {
+                const newComments = backendComments.map((backendComment) => {
+                    if (backendComment.id === parentId) {
+                        return {
+                            ...backendComment,
+                            replies: [...backendComment.replies, comment],
+                        };
                     }
                     return backendComment;
-                },
-            );
-            setBackendComments(updatedBackendComments);
+                });
+                setBackendComments(newComments);
+            } else {
+                setBackendComments([comment, ...backendComments]);
+            }
             setActiveComment(null);
         });
     };
 
-    const deleteComment = (commentId) => {
-        if (window.confirm("Are you sure you want to remove comment?")) {
-            deleteCommentApi().then(() => {
-                const updatedBackendComments = backendComments.filter(
-                    (backendComment) => backendComment.id !== commentId,
+    const updateComment = (text, commentId, parentId = null) => {
+        updateCommentApi(text).then(() => {
+            if (parentId) {
+                const rootComment = backendComments.find(
+                    (backendComment) => backendComment.id === parentId,
+                );
+                rootComment.replies = rootComment.replies.map((comment) => {
+                    if (comment.id === commentId) {
+                        return { ...comment, content: text };
+                    }
+                    return comment;
+                });
+                setBackendComments(backendComments);
+            } else {
+                const updatedBackendComments = backendComments.map(
+                    (backendComment) => {
+                        if (backendComment.id === commentId) {
+                            return { ...backendComment, content: text };
+                        }
+                        return backendComment;
+                    },
                 );
                 setBackendComments(updatedBackendComments);
+            }
+            setActiveComment(null);
+        });
+    };
+
+    const deleteComment = (commentId, parentId = null) => {
+        if (window.confirm("Are you sure you want to remove comment?")) {
+            deleteCommentApi().then(() => {
+                if (parentId) {
+                    const rootComment = backendComments.find(
+                        (backendComment) => backendComment.id === parentId,
+                    );
+                    rootComment.replies = rootComment.replies.filter(
+                        (comment) => comment.id !== commentId,
+                    );
+                    const updatedBackendComments = backendComments.map(
+                        (backendComment) => {
+                            if (backendComment.id === rootComment.id) {
+                                return rootComment;
+                            }
+                            return backendComment;
+                        },
+                    );
+                    setBackendComments(updatedBackendComments);
+                } else {
+                    const updatedBackendComments = backendComments.filter(
+                        (backendComment) => backendComment.id !== commentId,
+                    );
+                    setBackendComments(updatedBackendComments);
+                }
             });
         }
     };
@@ -71,13 +102,13 @@ const Comments = () => {
             <CommentForm handleSubmit={addComment} submitLabel="Bình luận" />
 
             <div className="mt-8">
-                {(rootComments || []).map((rootComment) => (
+                {(backendComments || []).map((rootComment) => (
                     <Comment
                         key={rootComment.id}
                         comment={rootComment}
                         activeComment={activeComment}
                         setActiveComment={setActiveComment}
-                        replies={getReplies(rootComment.id)}
+                        replies={rootComment?.replies}
                         addComment={addComment}
                         updateComment={updateComment}
                         deleteComment={deleteComment}
