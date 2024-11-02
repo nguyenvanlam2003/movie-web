@@ -34,6 +34,7 @@ app.use("/api/favoriteMovies", favoriteRouter);
 app.use("/api/comments", commentRouter)
 // Route để lấy ảnh từ thư mục images
 app.use('/images/avatar', express.static(path.join(__dirname, 'images', 'avatar')));
+app.use('/images/movies', express.static(path.join(__dirname, 'images', 'movies')));
 
 
 app.listen(port, () => {

@@ -1,7 +1,32 @@
 const router = require("express").Router();
 const Movie = require("../models/Movie");
 const verify = require("../verifyToken");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const CryptoJS = require("crypto-js");
+const mongoose = require("mongoose");
 
+// Đường dẫn đến thư mục images/avatar trong thư mục gốc của dự án
+const avatarDir = path.join(__dirname, '..', 'images', 'movies');
+
+// Tạo thư mục nếu chưa tồn tại
+if (!fs.existsSync(avatarDir)) {
+    fs.mkdirSync(avatarDir, { recursive: true });
+}
+
+// Cấu hình storage cho multer
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, avatarDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Tạo tên file duy nhất
+    }
+});
+
+const upload = multer({ storage: storage })
 // Create a new movie
 /**
  * @swagger
@@ -42,14 +67,17 @@ const verify = require("../verifyToken");
  *                 type: number
  *                 description: Năm phát hành của phim
  *                 example: 1999
- *               acctor:
+ *               actor:
  *                 type: string
  *                 description: Tên diễn viên chính
  *                 example: "Keanu Reeves"
- *               direcor:
+ *               director:
  *                 type: string
  *                 description: Tên đạo diễn
  *                 example: "Lana Wachowski"
+ *               content:
+ *                 type: string
+ *                 description: Nội dung phimS
  *               genres:
  *                 type: array
  *                 items:
@@ -133,19 +161,42 @@ const verify = require("../verifyToken");
  *         description: Lỗi máy chủ
  */
 
-router.post("/", verify, async (req, res) => {
-    if (req.user.isAdmin) {
-        const newMovie = new Movie(req.body);
-        try {
-            const savedMovie = await newMovie.save();
-            res.status(201).json(savedMovie);
-        } catch (err) {
-            res.status(500).json(err);
+router.post("/", verify,
+    upload.fields([
+        { name: 'posterUrl', maxCount: 1 },
+        { name: 'thumbUrl', maxCount: 1 }
+    ]),
+    async (req, res) => {
+        if (req.user.isAdmin) {
+            try {
+                // Chuyển đổi genres từ chuỗi thành mảng ObjectId
+                if (req.body.genres) {
+                    req.body.genres = req.body.genres.split(',').map(id => id.trim().replace(/^'|'$/g, ""));
+                }
+                // Chuyển đổi episodes từ chuỗi JSON thành mảng đối tượng
+                if (req.body.episodes) {
+                    req.body.episodes = JSON.parse(req.body.episodes).map(episode => {
+                        return {
+                            ...episode,
+                            _id: new mongoose.Types.ObjectId(), // Tạo ObjectId mới cho mỗi episode
+                        };
+                    });
+                }
+                req.body.posterUrl = req.files['posterUrl']?.[0].filename;
+                req.body.thumbUrl = req.files['thumbUrl']?.[0].filename;
+                console.log(req.body);
+                const newMovie = new Movie(req.body);
+                const savedMovie = await newMovie.save();
+                res.status(201).json(savedMovie);
+            } catch (err) {
+                console.error(err);
+
+                res.status(500).json(err);
+            }
+        } else {
+            res.status(403).json("Bạn không có quyền thêm phim mới!");
         }
-    } else {
-        res.status(403).json("Bạn không có quyền thêm phim mới!");
-    }
-});
+    });
 // get 
 /**
  * @swagger
@@ -267,6 +318,8 @@ router.get("/", async (req, res) => {
  *                   items:
  *                     type: object
  *                     properties:
+ *                       _id:
+ *                         type: String
  *                       nameGenre:
  *                         type: string
  *                 time:
@@ -298,7 +351,7 @@ router.get("/:id", async (req, res) => {
     try {
         const movie = await Movie.findById(req.params.id).populate({
             path: "genres",
-            select: { nameGenre: 1, _id: 0 }
+            select: { nameGenre: 1, _id: 1 }
         });
 
         if (!movie) {
@@ -307,6 +360,8 @@ router.get("/:id", async (req, res) => {
 
         res.status(200).json(movie);
     } catch (err) {
+        console.error(err);
+
         res.status(500).json(err);
     }
 });
@@ -424,31 +479,90 @@ router.get("/:id", async (req, res) => {
  *         description: Lỗi máy chủ
  */
 
-router.put("/", verify, async (req, res) => {
-    try {
-        if (req.user.isAdmin) {
-            const updatedMovie = await Movie.findByIdAndUpdate(
-                req.body._id,
-                { $set: req.body },
-                { new: true, runValidators: true }  // new: true trả về document mới sau khi cập nhật
-            ).populate({
-                path: "genres",
-                select: { nameGenre: 1, _id: 0 }  // Chỉ lấy ra nameGenre
-            });
+router.put("/", verify,
+    upload.fields([
+        { name: 'posterUrl', maxCount: 1 },
+        { name: 'thumbUrl', maxCount: 1 }
+    ]),
+    async (req, res) => {
+        try {
+            if (req.user.isAdmin) {
+                if (req.body.genres) {
+                    req.body.genres = req.body.genres.split(',').map(id => id.trim().replace(/^'|'$/g, ""));
+                }
+                // Chuyển đổi episodes từ chuỗi JSON thành mảng đối tượng
+                if (req.body.episodes) {
+                    req.body.episodes = JSON.parse(req.body.episodes).map(episode => {
+                        return {
+                            ...episode,
+                            _id: new mongoose.Types.ObjectId(), // Tạo ObjectId mới cho mỗi episode
+                        };
+                    });
+                }
+                // Nếu có ảnh mới, kiểm tra xem ảnh cũ có tồn tại không
+                const findMovie = await Movie.findById(req.body._id)
+                if (!findMovie) {
+                    return res.status(404).json("Không tìm thấy phim");
+                }
 
-            if (!updatedMovie) {
-                return res.status(404).json("Không tìm thấy phim");
+                // Kiểm tra xem có ảnh mới được gửi lên không
+                if (req.files) {
+                    // Kiểm tra nếu có posterUrl mới thì xóa ảnh cũ
+                    if (req.body.posterUrl !== "1") {
+                        if (findMovie.avatar) {
+                            const oldPosterPath = path.join(avatarDir, findMovie.avatar); // Đường dẫn cũ đến poster
+                            if (fs.existsSync(oldPosterPath)) {
+                                fs.unlinkSync(oldPosterPath); // Xóa ảnh cũ
+                            }
+                        }
+                        // Cập nhật tên file mới vào DB
+                        req.body.posterUrl = req.files['posterUrl'][0].filename;
+                    } else {
+                        req.body.posterUrl = findMovie.posterUrl
+                    }
+
+                    // Kiểm tra nếu có thumbUrl mới thì xóa ảnh cũ
+                    if (req.body.thumbUrl !== "1") {
+                        if (findMovie.thumbUrl) {
+                            const oldThumbPath = path.join(avatarDir, findMovie.thumbUrl); // Đường dẫn cũ đến thumb
+                            if (fs.existsSync(oldThumbPath)) {
+                                fs.unlinkSync(oldThumbPath); // Xóa ảnh cũ
+                            }
+                        }
+                        // Cập nhật tên file mới vào DB
+                        req.body.thumbUrl = req.files['thumbUrl'][0].filename;
+                    }
+                    else {
+                        req.body.thumbUrl = findMovie.thumbUrl
+                    }
+                }
+                console.log(req.body);
+
+                const updatedMovie = await Movie.findByIdAndUpdate(
+                    req.body._id,
+                    { $set: req.body },
+                    { new: true, runValidators: true }  // new: true trả về document mới sau khi cập nhật
+                ).populate({
+                    path: "genres",
+                    select: { nameGenre: 1, _id: 0 }  // Chỉ lấy ra nameGenre
+                });
+                console.log(updatedMovie);
+                if (!updatedMovie) {
+                    return res.status(404).json("Không tìm thấy phim");
+                }
+
+
+                res.status(200).json(updatedMovie);
+            } else {
+                res.status(403).json("Bạn không có quyên sửa!!");
             }
 
-            res.status(200).json(updatedMovie);
-        } else {
-            res.status(403).json("Bạn không có quyên sửa!!");
-        }
+        } catch (err) {
+            console.error(err);
 
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
+            res.status(500).json(err);
+        }
+    });
 
 // delete movie by id
 /**
@@ -485,12 +599,29 @@ router.put("/", verify, async (req, res) => {
 
 router.delete("/:id", verify, async (req, res) => {
     try {
+        console.log(req.user.isAdmin);
         if (req.user.isAdmin) {
+
+
             const movie = await Movie.findById(req.params.id);
+
             if (!movie) {
                 return res.status(404).json({ message: "Không tìm thấy phim" });
             }
+            if (movie.posterUrl) {
+                const oldPosterPath = path.join(avatarDir, movie.posterUrl); // Đường dẫn cũ đến poster
+                if (fs.existsSync(oldPosterPath)) {
+                    fs.unlinkSync(oldPosterPath); // Xóa ảnh cũ
+                }
+            }
 
+            // Xóa ảnh cũ thumb nếu có
+            if (movie.thumbUrl) {
+                const oldThumbPath = path.join(avatarDir, movie.thumbUrl); // Đường dẫn cũ đến thumb
+                if (fs.existsSync(oldThumbPath)) {
+                    fs.unlinkSync(oldThumbPath); // Xóa ảnh cũ
+                }
+            }
             await Movie.findByIdAndDelete(req.params.id);
             res.status(200).json({ message: "Phim đã được xóa thành công" });
         } else {
@@ -498,6 +629,8 @@ router.delete("/:id", verify, async (req, res) => {
         }
 
     } catch (err) {
+        console.error(err);
+
         res.status(500).json(err);
     }
 });

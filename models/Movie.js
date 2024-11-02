@@ -7,8 +7,10 @@ const MovieSchema = new mongoose.Schema({
     posterUrl: { type: String, default: "" },
     thumbUrl: { type: String, default: "" },
     year: { type: Number, default: 2000 },
-    acctor: { type: String },
-    direcor: { type: String },
+    actor: { type: String },
+    director: { type: String },
+    content: { type: String },
+    voteAverage: { type: String },
     genres: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Genre"
