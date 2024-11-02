@@ -3,15 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 
-const EpisodesInput = ({ onChange, control }) => {
-    const [episodes, setEpisodes] = useState([]);
+const EpisodesInput = ({ onChange, control, value = [] }) => {
+    const [episodes, setEpisodes] = useState(value);
 
     const addEpisode = (e) => {
         e.preventDefault();
         setEpisodes([
             ...episodes,
             {
-                id: crypto.randomUUID(),
+                _id: crypto.randomUUID(),
                 name: "",
                 video: "",
             },
@@ -19,9 +19,7 @@ const EpisodesInput = ({ onChange, control }) => {
     };
 
     const handleRemoveEpisode = (episodeId) => {
-        const newEpisodes = episodes.filter((episode) => {
-            return episode.id !== episodeId;
-        });
+        const newEpisodes = episodes.filter((episode) => episode._id !== episodeId);
         setEpisodes(newEpisodes);
     };
 
@@ -34,26 +32,33 @@ const EpisodesInput = ({ onChange, control }) => {
     const movieType = useWatch({ name: "type", control });
 
     useEffect(() => {
-        if (movieType === "single") {
-            setEpisodes([
-                {
-                    id: crypto.randomUUID(),
-                    name: "",
-                    video: "",
-                },
-            ]);
+        if (value.length <= 0) {
+            if (movieType === "single") {
+                setEpisodes([
+                    {
+                        _id: crypto.randomUUID(),
+                        name: "",
+                        video: "",
+                    },
+                ]);
+            }
+            if (movieType === "series") {
+                setEpisodes([
+                    // {
+                    //     name: "",
+                    //     video: "",
+                    // },
+                    ...episodes,
+                ]);
+            }
+        } else {
+            setEpisodes(value);
         }
-        if (movieType === "series") {
-            setEpisodes([
-                // {
-                //     name: "",
-                //     video: "",
-                // },
-                ...episodes,
-            ]);
-        }
+
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [movieType, episodes.length]);
+    }, [movieType]);
+
 
     useEffect(() => {
         onChange(episodes);
@@ -63,7 +68,7 @@ const EpisodesInput = ({ onChange, control }) => {
         <div>
             {episodes.map((episode, index) => (
                 <div
-                    key={episode.id}
+                    key={episode._id}
                     className="relative border-b-2 border-t-2 border-[#e3e3e9] py-2"
                 >
                     <div className="mb-3">
@@ -107,7 +112,7 @@ const EpisodesInput = ({ onChange, control }) => {
                     {index !== 0 && (
                         <div
                             className="absolute right-0 top-1 cursor-pointer"
-                            onClick={() => handleRemoveEpisode(episode.id)}
+                            onClick={() => handleRemoveEpisode(episode._id)}
                         >
                             <FontAwesomeIcon
                                 icon={faCircleXmark}

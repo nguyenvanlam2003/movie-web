@@ -71,9 +71,8 @@ const EditUser = () => {
                     },
                 }
             );
-            console.log(formData);
 
-            //navigate("/admin/user")
+            navigate("/admin/user")
         } catch (error) {
             console.error("Error updating user:", error);
         }

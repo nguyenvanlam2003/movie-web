@@ -33,7 +33,7 @@ const Root = () => {
 
                     setUserName(userData.username);
                     setEmail(userData.email);
-                    setAvatar("http://localhost:8080/images/avatar/" + userData.avatar);
+                    setAvatar(userData.avatar);
                     console.log(userName, email, avatar);
 
                 }

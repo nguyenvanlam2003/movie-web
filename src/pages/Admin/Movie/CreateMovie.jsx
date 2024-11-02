@@ -7,19 +7,61 @@ import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from 'axios';
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const CreateMovie = () => {
+    const navigate = useNavigate();
     const { handleSubmit, control, register, setValue, reset } = useForm({
         defaultValues: {
             type: "single",
         },
     });
+    const token = Cookies.get("accessToken");
+
     const [posterPreview, setPosterPreview] = useState("/img-placeholder.jpg");
     const [thumbPreview, setThumbPreview] = useState("/img-placeholder.jpg");
 
-    const onSubmit = (data) => {
-        console.log({ formData: data });
-        reset();
+    const onSubmit = async (data) => {
+        const formData = new FormData();
+
+        formData.append("originName", data.originName);
+        formData.append("slug", data.slug);
+        formData.append("type", data.type);
+        if (data.posterUrl) {
+            formData.append("posterUrl", data.posterUrl[0]);
+        }
+        if (data.thumbUrl) {
+            formData.append("thumbUrl", data.thumbUrl[0]);
+        }
+
+
+        formData.append("year", data.year);
+        formData.append("actor", data.actor);
+        formData.append("director", data.director);
+        formData.append("content", data.content);
+        formData.append("voteAverage", data.voteAverage);
+        // Xử lý genres thành chuỗi và thêm vào formData
+
+        formData.append("genres", data.genres);
+        formData.append("time", data.time);
+        formData.append("trailerKey", data.trailerKey);
+        formData.append("episodes", JSON.stringify(data.episodes));
+
+        const response = await axios.post(`http://localhost:8080/api/movies`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+        // Log dữ liệu trong formData
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        navigate("/admin/movie")
     };
 
     const handleChangePoster = (e) => {
@@ -27,7 +69,7 @@ const CreateMovie = () => {
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setPosterPreview(previewUrl);
-            setValue("posterUrl", file, { shouldValidate: true });
+            setValue("posterUrl", e.target.files);
         }
     };
 
@@ -36,7 +78,7 @@ const CreateMovie = () => {
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setThumbPreview(previewUrl);
-            setValue("thumbUrl", file, { shouldValidate: true });
+            setValue("thumbUrl", e.target.files);
         }
     };
 
@@ -69,13 +111,13 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="name"
-                                {...register("name")}
+                                {...register("originName")}
                                 type="text"
                                 placeholder="Nhập tên phim"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>
-                        <div className="mb-3">
+                        {/* <div className="mb-3">
                             <label
                                 htmlFor="origin-name"
                                 className="mb-1 block font-bold"
@@ -89,7 +131,7 @@ const CreateMovie = () => {
                                 placeholder="Nhập tên gốc phim"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
-                        </div>
+                        </div> */}
                         <div className="mb-3">
                             <label
                                 htmlFor="slug"
@@ -274,7 +316,7 @@ const CreateMovie = () => {
                             </label>
                             <input
                                 id="trailer-key"
-                                {...register("trailer")}
+                                {...register("trailerKey")}
                                 type="text"
                                 placeholder="Nhập trailer key"
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"

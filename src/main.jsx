@@ -33,11 +33,11 @@ const router = createBrowserRouter([
                 element: <HomePage />,
             },
             {
-                path: "/info/:slug",
+                path: "/info/:id",
                 element: <MovieDetail />,
             },
             {
-                path: "/watch/:slug",
+                path: "/watch/:id",
                 element: <Watch />,
             },
             {
@@ -79,7 +79,7 @@ const router = createBrowserRouter([
         element: <AdminRouter element={<CreateMovie />} />,
     },
     {
-        path: "/admin/movie/edit",
+        path: "/admin/movie/edit/:id",
         element: <AdminRouter element={<EditMovie />} />,
     },
     {

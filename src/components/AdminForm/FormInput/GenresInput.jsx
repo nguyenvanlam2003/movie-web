@@ -1,31 +1,25 @@
-const GENRES = [
-    {
-        id: "37a7b38b6184a5ebd3c43015aa20709d",
-        name: "Chính Kịch",
-        slug: "chinh-kich",
-    },
-    {
-        id: "ba6fd52e5a3aca80eaaf1a3b50a182db",
-        name: "Hài Hước",
-        slug: "hai-huoc",
-    },
-    {
-        id: "46a6df48b64935df845cf8ad4f448d4c",
-        name: "Tình Cảm",
-        slug: "tinh-cam",
-    },
-    {
-        id: "1a18f0d42e4e66060dbf1fd7cb25d11a",
-        name: "Tâm Lý",
-        slug: "tam-ly",
-    },
-];
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 const GenresInput = ({ onChange, value = [] }) => {
+    const [genres, setGenres] = useState([]);
+    useEffect(() => {
+        // Gọi API để lấy dữ liệu
+        const fetchGenres = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/genres');
+                setGenres(response.data); // Thay thế toàn bộ state bằng dữ liệu từ API
+            } catch (error) {
+                console.error("Error fetching genres:", error);
+            }
+        };
+
+        fetchGenres(); // Gọi hàm để lấy dữ liệu khi component mount
+    }, []);
     return (
         <div className="flex flex-wrap gap-2">
-            {GENRES.map((genre) => (
-                <div key={genre.id}>
+            {genres.map((genre) => (
+                <div key={genre._id}>
                     {/* <input
                 type="checkbox"
                 id={genre.slug}
@@ -39,20 +33,20 @@ const GenresInput = ({ onChange, value = [] }) => {
                 {genre.name}
             </label> */}
                     <p
-                        className={`cursor-pointer rounded-md border px-2 py-1 ${value.includes(genre.id) ? "bg-black text-white" : ""}`}
+                        className={`cursor-pointer rounded-md border px-2 py-1 ${value?.includes(genre._id) ? "bg-black text-white" : ""}`}
                         onClick={() => {
                             let currentValue = [...value];
-                            if (value.includes(genre.id)) {
+                            if (value.includes(genre._id)) {
                                 currentValue = currentValue.filter(
-                                    (g) => g !== genre.id,
+                                    (g) => g !== genre._id,
                                 );
                             } else {
-                                currentValue = [...value, genre.id];
+                                currentValue = [...value, genre._id];
                             }
                             onChange(currentValue);
                         }}
                     >
-                        {genre.name}
+                        {genre.nameGenre}
                     </p>
                 </div>
             ))}

@@ -3,25 +3,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const Watch = () => {
-    const { slug } = useParams();
+    const { id } = useParams();
     const [srcMovie, setSrcMovie] = useState("");
     const [chapterList, setChapterList] = useState([]);
     const [movieInfo, setMovieInfo] = useState({});
     const [currentChap, setCurrentChap] = useState(0);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`).then(
+        fetch(`http://localhost:8080/api/movies/${id}`).then(
             async (res) => {
                 const data = await res.json();
-                document.title = data?.movie.name;
-                setChapterList(data?.episodes[0]?.server_data);
+                setChapterList(data.episodes || []);
                 setSrcMovie(
-                    data?.episodes[0]?.server_data[currentChap]?.link_m3u8,
+                    data.episodes?.[currentChap]?.video || ""
                 );
-                setMovieInfo(data?.movie);
+                console.log(data.episodes?.[currentChap]?.video);
+
+                setMovieInfo(data);
             },
         );
-    }, [slug, currentChap]);
+    }, [id, currentChap]);
 
     useEffect(() => {
         const video = document.getElementById("film-video");
@@ -52,8 +53,8 @@ const Watch = () => {
             <div className="mx-auto max-w-screen-xl">
                 <h1 className="text-2xl font-bold lg:text-3xl">
                     {movieInfo?.type === "single"
-                        ? movieInfo.name
-                        : `${movieInfo.name} ~ Tập ${currentChap + 1}`}
+                        ? movieInfo.originName
+                        : `${movieInfo.originName} ~ Tập ${currentChap + 1}`}
                 </h1>
                 <div className="mt-5 flex flex-col gap-2 md:flex-row">
                     <div className="flex-[3]">
@@ -74,17 +75,16 @@ const Watch = () => {
                                 <ul className="mt-4 flex flex-wrap items-center gap-3">
                                     {chapterList.map((chap, index) => (
                                         <li
-                                            key={chap.link_m3u8}
-                                            className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg ${
-                                                currentChap === index
-                                                    ? "bg-green-700"
-                                                    : "bg-[#292e39]"
-                                            }`}
+                                            key={chap.video}
+                                            className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg ${currentChap === index
+                                                ? "bg-green-700"
+                                                : "bg-[#292e39]"
+                                                }`}
                                             onClick={() => {
                                                 setCurrentChap(index);
                                                 setSrcMovie(
                                                     chapterList[index]
-                                                        .link_m3u8,
+                                                        .video,
                                                 );
                                             }}
                                         >

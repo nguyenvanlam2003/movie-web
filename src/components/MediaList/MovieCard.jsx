@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
 
-const MovieCard = ({ name, year, posterUrl, type, time, slug }) => {
+const MovieCard = ({ name, year, posterUrl, type, time, _id }) => {
     return (
-        <Link to={`/info/${slug}`}>
+        <Link to={`/info/${_id}`}>
             <article className="flex h-full flex-col rounded-2xl bg-[#171c28] p-3 shadow-xl shadow-slate-700">
                 <div className="relative overflow-hidden pt-[100%]">
-                    {type === "tv" && (
+                    {/* {type === "tv" && (
                         <p className="absolute left-0 top-0 rounded-lg bg-[#a3765d] p-1 font-medium text-white shadow-lg">
                             TV Show
                         </p>
-                    )}
+                    )} */}
                     <img
-                        src={posterUrl && `https://phimimg.com/${posterUrl}`}
+                        src={posterUrl}
                         width={273}
                         height={273}
                         alt={name || "card-film"}

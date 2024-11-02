@@ -6,28 +6,41 @@ import Spinner from "@/components/Spinner";
 import CircularProgressBar from "@components/CircularProgressBar";
 import { useModalContext } from "@context/ModalProvider";
 import Comments from "@components/Comments";
+import axios from "axios";
 
 const MovieDetail = () => {
-    const { slug } = useParams();
+    const { id } = useParams();
     const [movieInfo, setMovieInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
     const { handlePlayTrailer } = useModalContext();
 
+    // useEffect(() => {
+    //     setIsLoading(true);
+    //     fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`)
+    //         .then(async (res) => {
+    //             const data = await res.json();
+    //             document.title = data.movie.name;
+    //             setMovieInfo(data.movie);
+    //         })
+    //         .catch((err) => console.error(err))
+    //         .finally(() => {
+    //             setIsLoading(false);
+    //         });
+    // }, [slug]);
     useEffect(() => {
-        setIsLoading(true);
-        fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`)
-            .then(async (res) => {
-                const data = await res.json();
-                document.title = data.movie.name;
-                setMovieInfo(data.movie);
-            })
-            .catch((err) => console.error(err))
-            .finally(() => {
+        const fetchMovie = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
+                setMovieInfo(response.data)
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            } finally {
                 setIsLoading(false);
-            });
-    }, [slug]);
-
+            }
+        };
+        fetchMovie();
+    }, [id]);
     return (
         <div className="min-h-[40vh] bg-[#06121d] px-5 py-3 lg:py-5">
             {isLoading ? (
@@ -37,7 +50,7 @@ const MovieDetail = () => {
                     <div className="relative py-3">
                         <figure className="h-[480px] lg:h-[450px]">
                             <img
-                                src={movieInfo?.thumb_url}
+                                src={movieInfo.thumbUrl ? `http://localhost:8080/images/movies/${movieInfo.thumbUrl}` : "/img-placeholder.jpg"}
                                 width={1280}
                                 height={450}
                                 className="h-full w-full object-cover brightness-50"
@@ -45,7 +58,7 @@ const MovieDetail = () => {
                         </figure>
                         <figure className="absolute left-5 top-5 h-[285px] w-[200px]">
                             <img
-                                src={movieInfo?.poster_url}
+                                src={movieInfo.posterUrl ? `http://localhost:8080/images/movies/${movieInfo.posterUrl}` : "/img-placeholder.jpg"}
                                 width={200}
                                 height={285}
                                 className="h-full w-full object-cover"
@@ -53,12 +66,12 @@ const MovieDetail = () => {
                         </figure>
                         <div className="absolute bottom-5 left-5 sm:bottom-6 md:bottom-7 lg:bottom-9">
                             <div className="flex items-center gap-[10px]">
-                                {movieInfo?.tmdb?.vote_average ? (
+                                {movieInfo.voteAverage ? (
                                     <div className="flex items-center gap-1">
                                         <CircularProgressBar
                                             percent={Math.round(
-                                                movieInfo?.tmdb?.vote_average *
-                                                    10,
+                                                movieInfo.voteAverage *
+                                                10,
                                             )}
                                         />
                                         <span className="text-white">
@@ -67,14 +80,14 @@ const MovieDetail = () => {
                                     </div>
                                 ) : null}
                                 <ul className="flex flex-wrap gap-2">
-                                    {(movieInfo.category || [])
+                                    {(movieInfo.genres || [])
                                         .slice(0, 3)
                                         .map((genre) => (
                                             <li
                                                 key={genre.id}
                                                 className="rounded-lg bg-white p-[6px] text-sm font-medium text-black"
                                             >
-                                                {genre.name}
+                                                {genre.nameGenre}
                                             </li>
                                         ))}
                                 </ul>
@@ -84,7 +97,7 @@ const MovieDetail = () => {
                                     className="flex h-10 items-center justify-center gap-2 rounded-full bg-black px-3 font-medium text-white"
                                     onClick={() => {
                                         handlePlayTrailer(
-                                            movieInfo?.trailer_url,
+                                            movieInfo?.trailerKey,
                                         );
                                     }}
                                 >
@@ -92,7 +105,7 @@ const MovieDetail = () => {
                                     Xem Trailer
                                 </button>
                                 <a
-                                    href={`/watch/${movieInfo.slug}`}
+                                    href={`/watch/${movieInfo._id}`}
                                     className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ffb700] px-5 font-medium text-[#171c28]"
                                 >
                                     <FontAwesomeIcon
@@ -114,7 +127,7 @@ const MovieDetail = () => {
                     </div>
                     <div className="mt-3 space-y-2 text-base text-white lg:text-lg">
                         <h1 className="text-3xl font-bold lg:text-4xl">
-                            {movieInfo?.name}
+                            {movieInfo?.originName}
                         </h1>
                         <p>
                             <span className="font-medium">Thời gian:</span>{" "}
@@ -126,8 +139,8 @@ const MovieDetail = () => {
                         </p>
                         <p>
                             <span className="font-medium">Thể loại:</span>{" "}
-                            {(movieInfo?.category || [])
-                                .map((genre) => genre.name)
+                            {(movieInfo?.genres || [])
+                                .map((genre) => genre.nameGenre)
                                 .join(", ")}
                         </p>
                         <p>
@@ -136,11 +149,11 @@ const MovieDetail = () => {
                         </p>
                         <p>
                             <span className="font-medium">Đạo diễn:</span>{" "}
-                            {(movieInfo?.director || []).join(", ")}
+                            {(movieInfo?.director || [])}
                         </p>
                         <p>
                             <span className="font-medium">Diễn viên:</span>{" "}
-                            {(movieInfo?.actor || []).join(", ")}
+                            {(movieInfo?.actor || [])}
                         </p>
                     </div>
 
