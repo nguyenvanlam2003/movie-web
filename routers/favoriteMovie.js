@@ -138,10 +138,37 @@ router.post("/", verify, async (req, res) => {
  *                   example: "user123"
  *                 movieNames:
  *                   type: array
- *                   description: Danh sách tên phim yêu thích
+ *                   description: Danh sách phim yêu thích
  *                   items:
- *                     type: string
- *                     example: "The Matrix"
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: ID của phim
+ *                         example: "3e9e39fed3b8369ed940f52cf300cf88"
+ *                       name:
+ *                         type: string
+ *                         description: Tên phim
+ *                         example: "Avengers: Hồi Kết"
+ *                       posterUrl:
+ *                         type: string
+ *                         description: URL hình ảnh poster của phim
+ *                         example: "/upload/vod/20231018-1/88c1ee81bbfcd39a73db1f83203b5501.jpg"
+ *                       year:
+ *                         type: integer
+ *                         description: Năm phát hành
+ *                         example: 2019
+ *                       time:
+ *                         type: string
+ *                         description: Thời lượng phim
+ *                         example: "180 phút"
+ *                       type:
+ *                         type: string
+ *                         example: "single"
+ *                       slug:
+ *                         type: string
+ *                         description: Đường dẫn slug của phim
+ *                         example: "avengers-hoi-ket"
  *       404:
  *         description: Danh sách yêu thích không tồn tại
  *         content:
@@ -168,8 +195,15 @@ router.get("/", verify, async (req, res) => {
         }
 
         // Lấy thông tin phim từ danh sách yêu thích
-        const movies = favoriteMovie.movieIds.map(movie => movie.originName);
-
+        const movies = favoriteMovie.movieIds.map(movie => ({
+            _id: movie._id,
+            name: movie.originName,
+            posterUrl: movie.posterUrl,
+            year: movie.year,
+            time: movie.time,
+            type: movie.type,
+            slug: movie.slug
+        }));
         // Lấy thông tin người dùng
         const user = await User.findById(favoriteMovie._id);
 
