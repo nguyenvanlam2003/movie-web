@@ -7,6 +7,7 @@ import CircularProgressBar from "@components/CircularProgressBar";
 import { useModalContext } from "@context/ModalProvider";
 import Comments from "@components/Comments";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const MovieDetail = () => {
     const { id } = useParams();
@@ -41,6 +42,54 @@ const MovieDetail = () => {
         };
         fetchMovie();
     }, [id]);
+    const handleAddFavoriteMovie = async (movieIds) => {
+        try {
+            // Lấy token từ localStorage (hoặc phương pháp lưu trữ khác)
+            const token = Cookies.get('accessToken');
+
+            // Kiểm tra nếu không có token
+            if (!token) {
+                throw new Error("Token không tồn tại hoặc người dùng chưa đăng nhập");
+            }
+
+            // Gửi yêu cầu POST lên server
+            const response = await axios.post(
+                'http://localhost:8080/api/favoriteMovies',
+                { movieIds }, // Body request chứa movieIds
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Gửi token trong header để xác thực
+                    },
+                }
+            );
+
+            // Xử lý phản hồi từ server
+            if (response.status === 201 || response.status === 200) {
+                const { userName, movieNames } = response.data;
+                console.log(`Người dùng: ${userName}`);
+                console.log("Danh sách phim yêu thích đã cập nhật:", movieNames);
+
+                // Trả về dữ liệu hoặc thông báo thành công
+                alert(userName + " đã thêm phim " + movieNames + " thành công")
+            }
+        } catch (error) {
+            console.error("Lỗi khi thêm phim vào danh sách yêu thích:", error);
+
+            // Xử lý các lỗi cụ thể nếu cần, ví dụ:
+            if (error.response) {
+                if (error.response.status === 400) {
+                    console.error("Phim này đã có trong danh sách yêu thích.");
+                } else if (error.response.status === 403) {
+                    console.error("Bạn không có quyền thêm phim vào danh sách.");
+                } else if (error.response.status === 500) {
+                    console.error("Lỗi máy chủ.");
+                }
+            }
+
+            // Trả về thông tin lỗi
+            return { success: false, error };
+        }
+    };
     return (
         <div className="min-h-[40vh] bg-[#06121d] px-5 py-3 lg:py-5">
             {isLoading ? (
@@ -114,7 +163,8 @@ const MovieDetail = () => {
                                     />
                                     Xem ngay
                                 </a>
-                                <button className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
+                                <button onClick={() => handleAddFavoriteMovie([id])}
+                                    className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
                                     <img
                                         src="/heart.svg"
                                         alt=""

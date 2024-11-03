@@ -83,7 +83,7 @@ const router = createBrowserRouter([
         element: <AdminRouter element={<EditMovie />} />,
     },
     {
-        path: "/comment/:id",
+        path: "/comment",
         element: <ManageComment />,
     },
     {

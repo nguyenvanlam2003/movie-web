@@ -109,11 +109,21 @@ const SideBar = ({ onLoadComplete }) => {
                         </ul> */}
                     </li>
                     <li>
+                        <a
+                            href="/comment"
+                            className="flex items-center gap-2"
+                        >
+                            <FontAwesomeIcon icon={faTableList} />
+                            <p>Quản lý bình luận</p>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#!" className="flex items-center gap-2" onClick={handleLogout}>
                             <FontAwesomeIcon icon={faRightFromBracket} />
                             <p>Đăng xuất</p>
                         </a>
                     </li>
+
                 </ul>
             </nav>
         </aside>
