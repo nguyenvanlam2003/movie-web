@@ -1,11 +1,14 @@
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-
+import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const UserProfile = () => {
     const { handleSubmit, register, setValue } = useForm();
-
+    const navigate = useNavigate();
     const changeTypePassword = (inputId, btnInd) => {
         const currentPassword = document.getElementById(inputId);
         const changeTypeBtn = document.getElementById(btnInd);
@@ -14,18 +17,59 @@ const UserProfile = () => {
         changeTypeBtn.src =
             currentPassword.type === "text" ? "/show.svg" : "/hide.svg";
     };
-
+    const [password, setPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [avatarPreview, setAvatarPreview] = useState("/img-placeholder.jpg");
+    const [avatarPreview, setAvatarPreview] = useState("/img-placeholder.jpg")
+    const [userName, setUserName] = useState("");
+    const [email, setEmail] = useState("");
+    const [id, setId] = useState("")
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = Cookies.get("accessToken");// Lấy accessToken từ cookie
+                if (token) {
+                    setIsLoggedIn(true)
+                    const decodedToken = jwt_decode(token); // Giải mã accessToken
+                    setId(decodedToken.id);
+
+                    const response = await axios.get(`http://localhost:8080/api/users/find/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    const userData = response.data;
+                    // Cập nhật state với dữ liệu người dùng
+
+                    setUserName(userData.username);
+                    setEmail(userData.email);
+                    setPassword(userData.password);
+                    setAvatarPreview("http://localhost:8080/images/avatar/" + userData.avatar);
+                    setValue("username", userData.username);
+                    setValue("email", userData.email);
+                    setValue("_id", decodedToken.id);
+                    setValue("password", confirmPassword)
+                } else {
+                    setIsLoggedIn(false)
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            }
+        };
+        fetchUser();
+    }, [isLoggedIn]); // Chạy khi component mount
+
+
 
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setAvatarPreview(previewUrl);
-            setValue("avatarUrl", file, { shouldValidate: true });
+            setValue("avatar", e.target.files);
         }
     };
 
@@ -34,7 +78,8 @@ const UserProfile = () => {
         setConfirmPassword("");
     };
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
+        const token = Cookies.get("accessToken");
         if (newPassword !== confirmPassword) {
             setErrorMessage(
                 "Mật khẩu xác nhận không trùng khớp. Vui lòng kiểm tra lại!",
@@ -42,10 +87,43 @@ const UserProfile = () => {
             return;
         } else {
             setErrorMessage("");
-            console.log({ formData: data });
+            try {
+                const formData = new FormData();
+
+                // Thêm các trường dữ liệu khác vào formData
+                formData.append("_id", id);
+                formData.append("username", userName);
+                formData.append("email", email);
+                formData.append("password", confirmPassword);
+
+                // Nếu có ảnh mới, thêm file vào formData
+                if (data.avatar) {
+                    formData.append("avatar", data.avatar[0]);  // data.avatar[0] vì file là array
+                }
+
+
+                const response = await axios.put(
+                    "http://localhost:8080/api/users/",
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "multipart/form-data",  // Đảm bảo header phù hợp
+                        },
+                    }
+                );
+                console.log({ formData: data });
+                navigate("/")
+            } catch (error) {
+                console.error("Error updating user:", error);
+            }
         }
     };
-
+    const handleLogout = () => {
+        // Xóa cookie chứa access token
+        Cookies.remove("accessToken");
+        window.location.href = "/";
+    };
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#292e39]">
             <div className="mx-auto w-[1170px] max-w-[calc(100%-48px)] rounded-3xl bg-[#fbf7f4] px-6 py-7 lg:px-16">
@@ -77,14 +155,15 @@ const UserProfile = () => {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold text-[#384d6c]">
-                                User
+                                {userName}
                             </h2>
                             <p className="mt-1 text-lg text-[#384d6c]">
-                                usertest@gmail.com
+                                {email}
                             </p>
                         </div>
                         <div className="ml-auto flex flex-wrap gap-5">
                             <a
+                                onClick={handleLogout}
                                 href="#!"
                                 className="flex h-12 items-center gap-2 rounded-full border border-solid border-[#384d6c] bg-white px-10 text-[#384d6c]"
                             >
@@ -114,36 +193,20 @@ const UserProfile = () => {
                         <div className="flex-1">
                             <label
                                 className="font-bold text-[#384d6c]"
-                                htmlFor="full-name"
-                            >
-                                Họ và tên
-                            </label>
-                            <div className="mt-3 flex h-[48px] w-full items-center rounded-lg border border-solid border-[#d1d5db] bg-white px-3 italic focus-within:border-[#77dae6]">
-                                <input
-                                    {...register("full-name")}
-                                    id="full-name"
-                                    name="full-name"
-                                    type="text"
-                                    placeholder="Nhập tên đầy đủ của bạn"
-                                    className="h-full w-full"
-                                />
-                            </div>
-                        </div>
-                        <div className="flex-1">
-                            <label
-                                className="font-bold text-[#384d6c]"
                                 htmlFor="user-name"
                             >
                                 Tên người dùng
                             </label>
                             <div className="mt-3 flex h-[48px] w-full items-center rounded-lg border border-solid border-[#d1d5db] bg-white px-3 italic focus-within:border-[#77dae6]">
                                 <input
-                                    {...register("user-name")}
-                                    id="user-name"
-                                    name="user-name"
+                                    {...register("username")}
+                                    id="username"
+                                    name="username"
                                     type="text"
                                     placeholder="Nhập tên người dùng của bạn"
                                     className="h-full w-full"
+                                    value={userName}
+                                    onChange={(e) => setUserName(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -164,8 +227,9 @@ const UserProfile = () => {
                                     name="email"
                                     id="email"
                                     pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
-                                    value="usertest@gmail.com"
+                                    value={email}
                                     readOnly
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                                 <img
                                     src="/message.svg"
@@ -184,12 +248,11 @@ const UserProfile = () => {
                             <div className="mt-3 flex h-[48px] w-full items-center rounded-lg border border-solid border-[#d1d5db] bg-white px-3 italic focus-within:border-[#77dae6]">
                                 <img src="/lock.svg" alt="" className="mr-1" />
                                 <input
-                                    {...register("current-password")}
                                     className="h-full w-full"
                                     type="password"
                                     name="current-password"
                                     id="current-password"
-                                    value={"12345"}
+                                    value={password}
                                     readOnly
                                 />
                                 <img
@@ -218,7 +281,6 @@ const UserProfile = () => {
                             <div className="mt-3 flex h-[48px] w-full items-center rounded-lg border border-solid border-[#d1d5db] bg-white px-3 italic focus-within:border-[#77dae6]">
                                 <img src="/lock.svg" alt="" className="mr-1" />
                                 <input
-                                    {...register("new-password")}
                                     className="h-full w-full"
                                     type="password"
                                     name="new-password"
@@ -256,10 +318,10 @@ const UserProfile = () => {
                             >
                                 <img src="/lock.svg" alt="" className="mr-1" />
                                 <input
-                                    {...register("confirm-password")}
+                                    {...register("password")}
                                     className="h-full w-full"
                                     type="password"
-                                    name="confirm-password"
+                                    name="password"
                                     id="confirm-password"
                                     placeholder="Xác nhận lại mật khẩu mới"
                                     value={confirmPassword}

@@ -5,37 +5,76 @@ import TypeInput from "@components/AdminForm/FormInput/TypeInput";
 import SideBar from "@components/SideBar";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditMovie = () => {
     const { handleSubmit, register, control, setValue } = useForm();
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const token = Cookies.get("accessToken");
 
-    const onSubmit = (data) => {
-        console.log(data);
+
+    const onSubmit = async (data) => {
+        const formData = new FormData();
+        formData.append("_id", id)
+        formData.append("originName", data.originName);
+        formData.append("slug", data.slug);
+        formData.append("type", data.type);
+        if (data.posterUrl) {
+            formData.append("posterUrl", data.posterUrl[0]);
+        }
+        if (data.thumbUrl) {
+            formData.append("thumbUrl", data.thumbUrl[0]);
+        }
+        formData.append("year", data.year);
+        formData.append("actor", data.actor);
+        formData.append("director", data.director);
+        formData.append("content", data.content);
+        formData.append("voteAverage", data.voteAverage);
+        // Xử lý genres thành chuỗi và thêm vào formData
+
+        formData.append("genres", data.genres);
+        formData.append("time", data.time);
+        formData.append("trailerKey", data.trailerKey);
+        formData.append("episodes", JSON.stringify(data.episodes));
+
+        const response = await axios.put(`http://localhost:8080/api/movies`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+        // Log dữ liệu trong formData
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        navigate("/admin/movie")
     };
 
-    const [name, setName] = useState("Beckham");
-    const [originName, setOriginName] = useState("Beckham");
-    const [slug, setSlug] = useState("beckham");
-    const [content, setContent] = useState(
-        "Có các thước phim chưa từng công bố trước đây, loạt phim tài liệu này dõi theo hành trình trỗi dậy mạnh mẽ của David Beckham từ khởi đầu khiêm tốn đến ngôi sao bóng đá toàn cầu.",
-    );
-    const [posterPreview, setPosterPreview] = useState("/img-placeholder.jpg");
-    const [thumbPreview, setThumbPreview] = useState("/img-placeholder.jpg");
+    const [originName, setOriginName] = useState("");
+    const [slug, setSlug] = useState("");
+    const [content, setContent] = useState();
+    const [posterPreview, setPosterPreview] = useState("");
+    const [thumbPreview, setThumbPreview] = useState("");
     const [voteAverage, setVoteAverage] = useState(9);
-    const [time, setTime] = useState("71 phút/tập");
+    const [time, setTime] = useState("");
     const [year, setYear] = useState(2023);
-    const [director, setDirector] = useState("Đang cập nhật");
-    const [actor, setActor] = useState("Beckham");
-    const [trailerKey, setTrailerKey] = useState("TEST");
+    const [director, setDirector] = useState("");
+    const [actor, setActor] = useState("");
+    const [trailerKey, setTrailerKey] = useState("");
 
     const handleChangePoster = (e) => {
         const file = e.target.files[0];
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setPosterPreview(previewUrl);
-            setValue("posterUrl", file, { shouldValidate: true });
+            setValue("posterUrl", e.target.files);
         }
     };
 
@@ -44,10 +83,51 @@ const EditMovie = () => {
         if (file) {
             const previewUrl = URL.createObjectURL(file);
             setThumbPreview(previewUrl);
-            setValue("thumbUrl", file, { shouldValidate: true });
+            setValue("thumbUrl", e.target.files);
         }
     };
+    useEffect(() => {
+        const fetchMovie = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
+                const movieData = response.data
+                const genreIds = movieData.genres.map((genre) => genre._id);
+                console.log(genreIds);
 
+                // Cập nhật form với danh sách genreIds từ API
+                setValue("genres", genreIds);
+                setOriginName(movieData.originName);
+                setSlug(movieData.slug)
+                setContent(movieData.content)
+                setPosterPreview(movieData.posterUrl ? "http://localhost:8080/images/movies/" + movieData.posterUrl : movieData.posterUrl)
+                setThumbPreview(movieData.thumbUrl ? "http://localhost:8080/images/movies/" + movieData.thumbUrl : movieData.thumbUrl)
+                setYear(movieData.year)
+                setActor(movieData.actor)
+                setDirector(movieData.director)
+                setVoteAverage(movieData.voteAverage)
+                setTime(movieData.time)
+                setTrailerKey(movieData.trailerKey)
+
+                setValue("type", movieData.type);
+                setValue("originName", movieData.originName)
+                setValue("slug", movieData.slug)
+                setValue("content", movieData.content)
+                setValue("posterUrl", movieData.posterUrl)
+                setValue("thumbUrl", movieData.thumbUrl)
+                setValue("year", movieData.year)
+                setValue("actor", movieData.actor)
+                setValue("director", movieData.director)
+                setValue("voteAverage", movieData.voteAverage)
+                setValue("time", movieData.time)
+                setValue("trailerKey", movieData.trailerKey)
+                setValue("episodes", movieData.episodes)
+                console.log(movieData.episodes)
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+            }
+        };
+        fetchMovie();
+    }, [id, setValue]);
     return (
         <div className="flex bg-[#f9f9fb]">
             <SideBar className="flex-1" />
@@ -68,35 +148,19 @@ const EditMovie = () => {
                         autoComplete="off"
                         onSubmit={handleSubmit(onSubmit)}
                     >
-                        <div className="mb-3">
-                            <label
-                                htmlFor="name"
-                                className="mb-1 block font-bold"
-                            >
-                                Tên phim
-                            </label>
-                            <input
-                                id="name"
-                                {...register("name")}
-                                type="text"
-                                placeholder="Nhập tên phim"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                            />
-                        </div>
+
                         <div className="mb-3">
                             <label
                                 htmlFor="origin-name"
                                 className="mb-1 block font-bold"
                             >
-                                Tên gốc
+                                Tên phim
                             </label>
                             <input
                                 id="origin-name"
                                 {...register("originName")}
                                 type="text"
-                                placeholder="Nhập tên gốc phim"
+                                placeholder="Nhập tên phim"
                                 value={originName}
                                 onChange={(e) => setOriginName(e.target.value)}
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
@@ -136,7 +200,7 @@ const EditMovie = () => {
                             <label htmlFor="poster-img">
                                 <img
                                     id="poster-preview"
-                                    src={posterPreview}
+                                    src={posterPreview ? `${posterPreview}` : "/img-placeholder.jpg"}
                                     alt=""
                                     className="mt-1 h-32 w-32 cursor-pointer rounded-xl object-cover"
                                 />
@@ -160,7 +224,7 @@ const EditMovie = () => {
                             <label htmlFor="thumb-img">
                                 <img
                                     id="thumb-preview"
-                                    src={thumbPreview}
+                                    src={thumbPreview ? `${thumbPreview}` : "/img-placeholder.jpg"}
                                     alt=""
                                     className="mt-1 h-32 w-32 cursor-pointer rounded-xl object-cover"
                                 />
@@ -229,7 +293,7 @@ const EditMovie = () => {
                             <input
                                 id="vote-average"
                                 {...register("voteAverage")}
-                                type="number"
+                                type="text"
                                 placeholder="Nhập điểm đánh giá"
                                 value={voteAverage}
                                 onChange={(e) => setVoteAverage(e.target.value)}
@@ -315,7 +379,7 @@ const EditMovie = () => {
                             </label>
                             <input
                                 id="trailer-key"
-                                {...register("trailer")}
+                                {...register("trailerKey")}
                                 type="text"
                                 placeholder="Nhập trailer key"
                                 value={trailerKey}
@@ -323,63 +387,6 @@ const EditMovie = () => {
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>
-
-                        {/* {episodes.map((episode, index) => (
-                            <div
-                                key={index}
-                                className="border-b-2 border-t-2 border-[#e3e3e9]"
-                            >
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor=""
-                                        className="mb-1 block font-bold"
-                                    >{`Tập ${index + 1}`}</label>
-                                    <input
-                                        type="text"
-                                        value={episode.name}
-                                        placeholder="Nhập tên của tập phim"
-                                        className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                                        name="ten-tap"
-                                        onChange={(e) => {
-                                            handleEpisodeChange(
-                                                index,
-                                                "name",
-                                                e.target.value,
-                                            );
-                                        }}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor=""
-                                        className="mb-1 block font-bold"
-                                    >{`Video tập ${index + 1}`}</label>
-                                    <input
-                                        type="url"
-                                        value={episode.video}
-                                        placeholder="Nhập link video"
-                                        className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
-                                        name="video"
-                                        onChange={(e) => {
-                                            handleEpisodeChange(
-                                                index,
-                                                "video",
-                                                e.target.value,
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-
-                        {movieType === "series" && (
-                            <button
-                                className="mt-2 rounded-lg bg-[#4e3698] px-3 py-2 text-white"
-                                onClick={addEpisode}
-                            >
-                                Thêm tập tiếp theo
-                            </button>
-                        )} */}
 
                         <FormField
                             name="episodes"

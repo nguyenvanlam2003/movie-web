@@ -8,7 +8,7 @@ const TypeInput = ({ onChange, value }) => {
                     id="single-type"
                     value="single"
                     checked={value === "single"}
-                    onChange={onChange}
+                    onChange={() => onChange("single")}
                 />
                 <label htmlFor="single-type">Phim lẻ</label>
             </div>
@@ -19,7 +19,7 @@ const TypeInput = ({ onChange, value }) => {
                     id="series-type"
                     value="series"
                     checked={value === "series"}
-                    onChange={onChange}
+                    onChange={() => onChange("series")}
                 />
                 <label htmlFor="series-type">Phim bộ</label>
             </div>

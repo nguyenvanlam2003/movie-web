@@ -1,12 +1,31 @@
 import { useForm } from "react-hook-form";
 import SideBar from "@components/SideBar";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useState } from "react";
 
 const CreateGenre = () => {
     const { handleSubmit, register, reset } = useForm();
+    const [nameGenre, setNameGenre] = useState("");
+    const [desc, setDesc] = useState("");
+    const navigate = useNavigate();
 
-    const onSubmit = (data) => {
-        console.log({ formData: data });
-        reset();
+    const onSubmit = async (data) => {
+        const token = Cookies.get("accessToken");
+        try {
+            const response = await axios.post(`http://localhost:8080/api/genres`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+            navigate("/admin/genre")
+        } catch (err) {
+            setError("Đăng ký thất bại, vui lòng thử lại.");
+        }
     };
 
     return (
@@ -41,6 +60,7 @@ const CreateGenre = () => {
                                 {...register("nameGenre")}
                                 type="text"
                                 placeholder="Nhập tên thể loại"
+                                onChange={(e) => setNameGenre(e.target.value)}
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>
@@ -56,6 +76,7 @@ const CreateGenre = () => {
                                 {...register("desc")}
                                 type="text"
                                 placeholder="Nhập mô tả"
+                                onChange={(e) => setDesc(e.target.value)}
                                 className="h-10 w-full rounded-lg border border-solid border-[#d2d1d6] px-3 focus:border-[#77dae6]"
                             />
                         </div>

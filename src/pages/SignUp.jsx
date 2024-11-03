@@ -1,4 +1,50 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const SignIn = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+    const [error, setError] = useState("");
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            setError("Mật khẩu không khớp.");
+            return;
+        }
+
+        try {
+            const response = await axios.post("http://localhost:8080/api/auth/register", {
+                username: formData.username,
+                email: formData.email,
+                password: formData.password
+            });
+
+            if (response.status === 201) {
+                alert("Đăng ký thành công!");
+                setFormData({
+                    username: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: ""
+                });
+                setError("");
+                navigate("/sign-in");
+            }
+        } catch (err) {
+            setError("Đăng ký thất bại, vui lòng thử lại.");
+        }
+    };
     return (
         <div className="flex h-[100vh]">
             <div className="w-content-inner mx-auto px-5 py-20 lg:py-40">
@@ -12,13 +58,28 @@ const SignIn = () => {
                     <p className="mt-3 text-center text-[#777e90]">
                         Hãy tạo tài khoản và bắt đầu trải nghiệm cùng chúng tôi
                     </p>
-                    <form action="" className="mt-7 w-full">
+                    <form action="" onSubmit={handleSubmit} className="mt-7 w-full">
+                        <div className="mt-6">
+                            <div className="flex h-12 items-center rounded-xl border-2 border-solid border-[#d9d9d9] px-3 focus-within:border-[#77dae6]">
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="User Name"
+                                    className="h-full w-full text-base"
+                                />
+                                <img src="/message.svg" alt="" className="ml-3" />
+                            </div>
+                        </div>
                         <div className="mt-6">
                             <div className="flex h-12 items-center rounded-xl border-2 border-solid border-[#d9d9d9] px-3 focus-within:border-[#77dae6]">
                                 <input
                                     type="email"
                                     name="email"
-                                    id="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     required
                                     placeholder="Email"
                                     className="h-full w-full text-base"
@@ -33,7 +94,8 @@ const SignIn = () => {
                                 <input
                                     type="password"
                                     name="password"
-                                    id="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     required
                                     minLength={6}
                                     placeholder="Mật khẩu"
@@ -46,8 +108,9 @@ const SignIn = () => {
                             <div className="flex h-12 items-center rounded-xl border-2 border-solid border-[#d9d9d9] px-3 focus-within:border-[#77dae6]">
                                 <input
                                     type="password"
-                                    name="confirm-password"
-                                    id="confirm-password"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
                                     required
                                     minLength={6}
                                     placeholder="Nhập lại mật khẩu"
@@ -56,8 +119,10 @@ const SignIn = () => {
                                 <img src="/lock.svg" alt="" />
                             </div>
                         </div>
+                        {error && <p className="mt-3 text-red-500">{error}</p>}
                         <div className="mt-10">
-                            <button className="flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-[#0166ff] px-5 text-white">
+                            <button type="submit"
+                                className="flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-[#0166ff] px-5 text-white">
                                 Đăng ký
                             </button>
                         </div>

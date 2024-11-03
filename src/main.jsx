@@ -23,7 +23,7 @@ import ManageGenre from "@pages/Admin/Genre/ManageGenre";
 import CreateGenre from "@pages/Admin/Genre/CreateGenre";
 import EditGenre from "@pages/Admin/Genre/EditGenre";
 import FavoriteList from "@pages/FavoriteList";
-
+import AdminRouter from "./AdminRouter"
 const router = createBrowserRouter([
     {
         element: <Root />,
@@ -33,11 +33,11 @@ const router = createBrowserRouter([
                 element: <HomePage />,
             },
             {
-                path: "/info/:slug",
+                path: "/info/:id",
                 element: <MovieDetail />,
             },
             {
-                path: "/watch/:slug",
+                path: "/watch/:id",
                 element: <Watch />,
             },
             {
@@ -72,39 +72,39 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin/movie",
-        element: <ManageMovie />,
+        element: <AdminRouter element={<ManageMovie />} />,
     },
     {
         path: "/admin/movie/create",
-        element: <CreateMovie />,
+        element: <AdminRouter element={<CreateMovie />} />,
     },
     {
-        path: "/admin/movie/edit",
-        element: <EditMovie />,
+        path: "/admin/movie/edit/:id",
+        element: <AdminRouter element={<EditMovie />} />,
     },
     {
-        path: "/comment/:id",
+        path: "/comment",
         element: <ManageComment />,
     },
     {
         path: "/admin/user",
-        element: <ManageUser />,
+        element: <AdminRouter element={<ManageUser />} />,
     },
     {
-        path: "admin/user/edit",
-        element: <EditUser />,
+        path: "admin/user/edit/:id",
+        element: <AdminRouter element={<EditUser />} />,
     },
     {
         path: "/admin/genre",
-        element: <ManageGenre />,
+        element: <AdminRouter element={<ManageGenre />} />,
     },
     {
         path: "/admin/genre/create",
-        element: <CreateGenre />,
+        element: <AdminRouter element={<CreateGenre />} />,
     },
     {
-        path: "/admin/genre/edit",
-        element: <EditGenre />,
+        path: "/admin/genre/edit/:id",
+        element: <AdminRouter element={<EditGenre />} />,
     },
 ]);
 

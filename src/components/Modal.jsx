@@ -1,16 +1,33 @@
+import axios from 'axios';
 const Modal = ({
     content = "",
     setShowModal,
-    listItem,
-    setListItem,
-    deletedItemId,
+    router,
+    deleteId,
+    token
 }) => {
-    const handleDeleteItem = (deletedItemId) => {
-        const newList = listItem.filter((movie) => {
-            return movie.id !== deletedItemId;
-        });
-        setListItem(newList);
-        setShowModal(false);
+    const handleDeleteItem = async () => {
+        // const newList = listItem.filter((movie) => {
+        //     return movie.id !== deletedItemId;
+        // });
+        // setListItem(newList);
+        // setShowModal(false);
+        console.log(router, deleteId, token);
+
+        try {
+            const response = await axios.delete(
+                `${router + deleteId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            setShowModal(false);
+            window.location.reload();
+        } catch (error) {
+            console.error("Error deleting genre:", error);
+        }
     };
 
     return (
@@ -30,7 +47,7 @@ const Modal = ({
                     </button>
                     <button
                         className="flex h-10 items-center justify-center rounded-md bg-[#ed4337] px-6 font-medium text-white"
-                        onClick={() => handleDeleteItem(deletedItemId)}
+                        onClick={() => handleDeleteItem(router, deleteId, token)}
                     >
                         Xóa
                     </button>
