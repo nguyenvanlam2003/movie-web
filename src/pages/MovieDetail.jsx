@@ -8,6 +8,8 @@ import { useModalContext } from "@context/ModalProvider";
 import Comments from "@components/Comments";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Toast from "@components/Toast/Toast";
+import { showSuccessToast } from "@components/Toast/Toast";
 
 const MovieDetail = () => {
     const { id } = useParams();
@@ -163,7 +165,7 @@ const MovieDetail = () => {
                                     />
                                     Xem ngay
                                 </a>
-                                <button onClick={() => handleAddFavoriteMovie([id])}
+                                <button
                                     className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
                                     <img
                                         src="/heart.svg"
