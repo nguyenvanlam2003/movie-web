@@ -35,13 +35,15 @@ const Comment = ({
                     <p className="text-lg font-medium">{comment.userName}</p>
                     <p>{new Date(comment.createdAt).toLocaleDateString()}</p>
                 </div>
-                {!isEditing && <p className="mt-1">{comment.body}</p>}
+                {!isEditing && <p className="mt-1">{comment.content}</p>}
                 {isEditing && (
                     <CommentForm
                         submitLabel="Cập nhật"
                         hasCancelButton
-                        initialText={comment.body}
-                        handleSubmit={(text) => updateComment(text, comment.id)}
+                        initialText={comment.content}
+                        handleSubmit={(text) =>
+                            updateComment(text, comment.id, parentId)
+                        }
                         handleCancel={() => setActiveComment(null)}
                     />
                 )}
@@ -75,7 +77,7 @@ const Comment = ({
                     {canDelete && (
                         <p
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
-                            onClick={() => deleteComment(comment.id)}
+                            onClick={() => deleteComment(comment.id, parentId)}
                         >
                             Xóa
                         </p>
@@ -92,7 +94,7 @@ const Comment = ({
                 )}
 
                 {/* Replies */}
-                {replies.length > 0 && (
+                {replies && (
                     <div className="mt-5">
                         {replies.map((reply) => (
                             <Comment

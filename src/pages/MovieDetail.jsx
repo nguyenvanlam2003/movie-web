@@ -166,7 +166,14 @@ const MovieDetail = () => {
                                     Xem ngay
                                 </a>
                                 <button
-                                    className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white">
+                                    className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white"
+                                    onClick={() =>
+                                        showSuccessToast(
+                                            "Thành công",
+                                            "Bạn đã thêm phim vào danh sách yêu thích",
+                                        )
+                                    }
+                               >    
                                     <img
                                         src="/heart.svg"
                                         alt=""
@@ -210,6 +217,7 @@ const MovieDetail = () => {
                     </div>
 
                     <Comments />
+                    <Toast />
                 </div>
             )}
         </div>
