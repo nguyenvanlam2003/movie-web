@@ -111,11 +111,11 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
-        !user && res.status(401).json("wrong password or username!")
+        if (!user) return res.status(401).json("wrong password or username!");
         const bytes = CryptoJS.AES.decrypt(user.password, process.env.SECRET_KEY);
         const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
-        originalPassword !== req.body.password && res.status(401).json("wrong password or username!")
+        if (originalPassword !== req.body.password) return res.status(401).json("wrong password or username!");
 
         // Tạo accessToken
         const accesstoken = jwt.sign(
@@ -127,6 +127,8 @@ router.post("/login", async (req, res) => {
         res.status(200).json({ ...info, accesstoken })
 
     } catch (err) {
+        console.error(err);
+
         res.status(500).json(err)
     }
 })

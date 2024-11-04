@@ -262,11 +262,21 @@ router.post("/", verify,
  *         description: Lỗi máy chủ
 
  */
+
 router.get("/", async (req, res) => {
     try {
-        const movies = await Movie.find().populate({
+        // Lấy giá trị của query parameter `originName` từ request
+        const { originName } = req.query;
+
+        // Kiểm tra nếu có `originName`, sẽ tìm kiếm theo từ khóa này, nếu không sẽ lấy toàn bộ phim
+        const query = originName
+            ? { originName: { $regex: originName, $options: "i" } } // Tìm kiếm không phân biệt hoa thường
+            : {};
+
+        // Tìm phim dựa trên query
+        const movies = await Movie.find(query).populate({
             path: "genres",
-            select: { nameGenre: 1, _id: 0 }, // Chỉ lấy ra nameGenre của genre
+            select: { nameGenre: 1, _id: 0 }, // Chỉ lấy `nameGenre` của `genre`
         });
         res.status(200).json(movies);
     } catch (err) {
