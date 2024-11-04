@@ -12,11 +12,19 @@ const SearchPage = () => {
     const handleSearch = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        const res = await fetch(`${import.meta.env.VITE_API_HOST}/v1/api/tim-kiem?keyword=${searchText}&limit=18`);
-        const responseData = await res.json();
-        const data = responseData?.data;
-        setMovieList(data?.items);
-        setIsLoading(false);
+
+        try {
+            const res = await fetch(`http://localhost:8080/api/movies?originName=${(searchText)}`);
+            if (!res.ok) {
+                throw new Error("Có lỗi xảy ra khi tìm kiếm phim!");
+            }
+            const responseData = await res.json();
+            setMovieList(responseData);
+        } catch (error) {
+            console.error("Error in searching movies:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -59,12 +67,12 @@ const SearchPage = () => {
                         {movieList.map((media) => (
                             <MovieCard
                                 key={media._id}
-                                name={media.name}
-                                posterUrl={media.poster_url}
+                                name={media.originName}
+                                posterUrl={media.posterUrl ? `http://localhost:8080/images/movies/${media.posterUrl}` : "/img-placeholder.jpg"}
                                 year={media.year}
                                 time={media.time}
                                 type={media.type}
-                                slug={media.slug}
+                                _id={media._id}
                             />
                         ))}
                     </div>

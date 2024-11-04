@@ -160,7 +160,7 @@ const ManageUser = () => {
                                                     setShowModal(true);
                                                     setDeletedUserId(user._id);
                                                     setModalContent(
-                                                        `người dùng "${user.userName}"`,
+                                                        `người dùng "${user.username}"`,
                                                     );
                                                 }}
                                             >

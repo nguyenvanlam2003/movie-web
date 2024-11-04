@@ -70,9 +70,10 @@ const MovieDetail = () => {
                 const { userName, movieNames } = response.data;
                 console.log(`Người dùng: ${userName}`);
                 console.log("Danh sách phim yêu thích đã cập nhật:", movieNames);
-
-                // Trả về dữ liệu hoặc thông báo thành công
-                alert(userName + " đã thêm phim " + movieNames + " thành công")
+                showSuccessToast(
+                    "Thành công",
+                    "Bạn đã thêm phim vào danh sách yêu thích",
+                )
             }
         } catch (error) {
             console.error("Lỗi khi thêm phim vào danh sách yêu thích:", error);
@@ -167,13 +168,8 @@ const MovieDetail = () => {
                                 </a>
                                 <button
                                     className="flex h-10 items-center justify-center gap-2 rounded-full bg-[#ff0000] px-5 text-base text-white"
-                                    onClick={() =>
-                                        showSuccessToast(
-                                            "Thành công",
-                                            "Bạn đã thêm phim vào danh sách yêu thích",
-                                        )
-                                    }
-                               >    
+                                    onClick={() => handleAddFavoriteMovie([id])}
+                                >
                                     <img
                                         src="/heart.svg"
                                         alt=""

@@ -87,12 +87,14 @@ const FavoriteList = () => {
                     {movieList.map((movie) => (
                         <div key={movie._id} className="relative">
                             <MovieCard
-                                name={movie.name}
+                                key={movie._id}
+                                name={movie.originName}
                                 posterUrl={movie.posterUrl ? `http://localhost:8080/images/movies/${movie.posterUrl}` : "/img-placeholder.jpg"}
                                 year={movie.year}
                                 time={movie.time}
                                 type={movie.type}
                                 slug={movie.slug}
+                                _id={movie._id}
                             />
                             <button
                                 className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-[50%] bg-[#fd5465] hover:bg-[#f7941e]"

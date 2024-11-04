@@ -33,7 +33,7 @@ const Movie = ({ movies }) => {
                         </div>
                         <div>
                             <a
-                                href={`/info/${movie.slug}`}
+                                href={`/info/${movie._id}`}
                                 className="mt-3 inline-block rounded bg-slate-300/30 px-4 py-2 lg:text-lg"
                             >
                                 Thông tin
