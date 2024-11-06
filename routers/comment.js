@@ -64,11 +64,13 @@ router.post("/", verify, async (req, res) => {
         const newComment = new Comment({
             content: req.body.content,
             userId: userId,
-            movieId: req.body.movieId
+            movieId: req.body.movieId,
+            parentId: null
         });
 
         // Lưu comment vào database
         const savedComment = await newComment.save();
+        console.log(newComment);
         res.status(201).json(savedComment);
 
     } catch (err) {
@@ -255,8 +257,10 @@ router.get("/:movieId", async (req, res) => {
                 _id: reply._id,
                 username: reply.userId ? reply.userId.username : null,  // Tên người dùng của reply
                 parentContent: reply.parentId ? reply.parentId.content : null,  // Nội dung bình luận cha
-                contentReplies: reply.contentReplies  // Nội dung reply
-            }))
+                content: reply.contentReplies,  // Nội dung reply
+                createdAt: comment.updatedAt,
+            })),
+            createdAt: comment.createdAt,
         }));
 
         if (formattedComments.length === 0) {
