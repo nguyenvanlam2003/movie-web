@@ -13,11 +13,11 @@ const Comment = ({
 }) => {
     const isReplying =
         activeComment?.id &&
-        activeComment.id === comment.id &&
+        activeComment.id === comment._id &&
         activeComment.type === "replying";
     const isEditing =
         activeComment?.id &&
-        activeComment.id === comment.id &&
+        activeComment.id === comment._id &&
         activeComment.type === "editing";
     const canReply = !!currentUserId;
     const canEdit = currentUserId === comment.userId;
@@ -32,7 +32,7 @@ const Comment = ({
             />
             <div className="flex-1">
                 <div className="flex items-center gap-2">
-                    <p className="text-lg font-medium">{comment.userName}</p>
+                    <p className="text-lg font-medium">{comment.username}</p>
                     <p>{new Date(comment.createdAt).toLocaleDateString()}</p>
                 </div>
                 {!isEditing && <p className="mt-1">{comment.content}</p>}
@@ -42,7 +42,7 @@ const Comment = ({
                         hasCancelButton
                         initialText={comment.content}
                         handleSubmit={(text) =>
-                            updateComment(text, comment.id, parentId)
+                            updateComment(text, comment._id, parentId)
                         }
                         handleCancel={() => setActiveComment(null)}
                     />
@@ -53,7 +53,7 @@ const Comment = ({
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
                             onClick={() =>
                                 setActiveComment({
-                                    id: comment.id,
+                                    id: comment._id,
                                     type: "replying",
                                 })
                             }
@@ -66,7 +66,7 @@ const Comment = ({
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
                             onClick={() =>
                                 setActiveComment({
-                                    id: comment.id,
+                                    id: comment._id,
                                     type: "editing",
                                 })
                             }
@@ -77,7 +77,7 @@ const Comment = ({
                     {canDelete && (
                         <p
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
-                            onClick={() => deleteComment(comment.id, parentId)}
+                            onClick={() => deleteComment(comment._id, parentId)}
                         >
                             Xóa
                         </p>
@@ -87,7 +87,7 @@ const Comment = ({
                 {isReplying && (
                     <CommentForm
                         handleSubmit={(text) =>
-                            addComment(text, parentId ? parentId : comment.id)
+                            addComment(text, parentId ? parentId : comment._id)
                         }
                         submitLabel="Bình luận"
                     />
@@ -98,7 +98,7 @@ const Comment = ({
                     <div className="mt-5">
                         {replies.map((reply) => (
                             <Comment
-                                key={reply.id}
+                                key={reply._id}
                                 comment={reply}
                                 activeComment={activeComment}
                                 setActiveComment={setActiveComment}
@@ -107,7 +107,7 @@ const Comment = ({
                                 updateComment={updateComment}
                                 deleteComment={deleteComment}
                                 currentUserId={currentUserId}
-                                parentId={comment.id}
+                                parentId={comment._id}
                             />
                         ))}
                     </div>

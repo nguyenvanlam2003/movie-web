@@ -8,6 +8,7 @@ import { useModalContext } from "@context/ModalProvider";
 import Comments from "@components/Comments";
 import axios from "axios";
 import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode";
 import Toast from "@components/Toast/Toast";
 import { showSuccessToast } from "@components/Toast/Toast";
 
@@ -15,9 +16,9 @@ const MovieDetail = () => {
     const { id } = useParams();
     const [movieInfo, setMovieInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-
+    const [userId, setUserId] = useState("");
     const { handlePlayTrailer } = useModalContext();
-
+    const token = Cookies.get('accessToken');
     // useEffect(() => {
     //     setIsLoading(true);
     //     fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`)
@@ -36,6 +37,10 @@ const MovieDetail = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
                 setMovieInfo(response.data)
+                if (token) {
+                    const decodedToken = jwt_decode(token);
+                    setUserId(decodedToken.id);
+                }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu người dùng:", error);
             } finally {
@@ -46,9 +51,6 @@ const MovieDetail = () => {
     }, [id]);
     const handleAddFavoriteMovie = async (movieIds) => {
         try {
-            // Lấy token từ localStorage (hoặc phương pháp lưu trữ khác)
-            const token = Cookies.get('accessToken');
-
             // Kiểm tra nếu không có token
             if (!token) {
                 throw new Error("Token không tồn tại hoặc người dùng chưa đăng nhập");
@@ -92,6 +94,10 @@ const MovieDetail = () => {
             // Trả về thông tin lỗi
             return { success: false, error };
         }
+    };
+    const [commentLoaded, setcommentLoaded] = useState(false);
+    const handleSidebarLoadComplete = () => {
+        setcommentLoaded(true); // Cập nhật trạng thái khi sidebar đã tải xong
     };
     return (
         <div className="min-h-[40vh] bg-[#06121d] px-5 py-3 lg:py-5">
@@ -212,7 +218,7 @@ const MovieDetail = () => {
                         </p>
                     </div>
 
-                    <Comments />
+                    <Comments movieId={movieInfo._id} userId={userId} onLoadComplete={handleSidebarLoadComplete} />
                     <Toast />
                 </div>
             )}
