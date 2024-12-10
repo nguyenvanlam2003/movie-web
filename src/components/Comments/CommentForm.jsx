@@ -4,7 +4,7 @@ const CommentForm = ({
     handleSubmit,
     submitLabel,
     hasCancelButton = true,
-    initialText = ""
+    initialText = "",
 }) => {
     const [text, setText] = useState(initialText);
     const isTextareaDisabled = text.length === 0;
@@ -35,6 +35,10 @@ const CommentForm = ({
                 {hasCancelButton && (
                     <button
                         className="flex h-9 w-[90px] items-center justify-center rounded-xl bg-[#6c757d]"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setText("");
+                        }}
                     >
                         Cancel
                     </button>

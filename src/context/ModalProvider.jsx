@@ -39,7 +39,8 @@ const ModalProvider = ({ children }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [videoId, setVideoId] = useState("");
     const handlePlayTrailer = (trailerUrl) => {
-        const trailerKey = (trailerUrl || "").split("v=")[1];
+        // const trailerKey = (trailerUrl || "").split("v=")[1];
+        const trailerKey = trailerUrl;
         setModalIsOpen(true);
         setVideoId(trailerKey);
     };

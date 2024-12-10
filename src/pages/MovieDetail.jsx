@@ -18,7 +18,7 @@ const MovieDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [userId, setUserId] = useState("");
     const { handlePlayTrailer } = useModalContext();
-    const token = Cookies.get('accessToken');
+    const token = Cookies.get("accessToken");
     // useEffect(() => {
     //     setIsLoading(true);
     //     fetch(`${import.meta.env.VITE_API_HOST}/phim/${slug}`)
@@ -35,8 +35,10 @@ const MovieDetail = () => {
     useEffect(() => {
         const fetchMovie = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
-                setMovieInfo(response.data)
+                const response = await axios.get(
+                    `http://localhost:8080/api/movies/${id}`,
+                );
+                setMovieInfo(response.data);
                 if (token) {
                     const decodedToken = jwt_decode(token);
                     setUserId(decodedToken.id);
@@ -53,29 +55,34 @@ const MovieDetail = () => {
         try {
             // Kiểm tra nếu không có token
             if (!token) {
-                throw new Error("Token không tồn tại hoặc người dùng chưa đăng nhập");
+                throw new Error(
+                    "Token không tồn tại hoặc người dùng chưa đăng nhập",
+                );
             }
 
             // Gửi yêu cầu POST lên server
             const response = await axios.post(
-                'http://localhost:8080/api/favoriteMovies',
+                "http://localhost:8080/api/favoriteMovies",
                 { movieIds }, // Body request chứa movieIds
                 {
                     headers: {
                         Authorization: `Bearer ${token}`, // Gửi token trong header để xác thực
                     },
-                }
+                },
             );
 
             // Xử lý phản hồi từ server
             if (response.status === 201 || response.status === 200) {
                 const { userName, movieNames } = response.data;
                 console.log(`Người dùng: ${userName}`);
-                console.log("Danh sách phim yêu thích đã cập nhật:", movieNames);
+                console.log(
+                    "Danh sách phim yêu thích đã cập nhật:",
+                    movieNames,
+                );
                 showSuccessToast(
                     "Thành công",
                     "Bạn đã thêm phim vào danh sách yêu thích",
-                )
+                );
             }
         } catch (error) {
             console.error("Lỗi khi thêm phim vào danh sách yêu thích:", error);
@@ -85,7 +92,9 @@ const MovieDetail = () => {
                 if (error.response.status === 400) {
                     console.error("Phim này đã có trong danh sách yêu thích.");
                 } else if (error.response.status === 403) {
-                    console.error("Bạn không có quyền thêm phim vào danh sách.");
+                    console.error(
+                        "Bạn không có quyền thêm phim vào danh sách.",
+                    );
                 } else if (error.response.status === 500) {
                     console.error("Lỗi máy chủ.");
                 }
@@ -99,6 +108,7 @@ const MovieDetail = () => {
     const handleSidebarLoadComplete = () => {
         setcommentLoaded(true); // Cập nhật trạng thái khi sidebar đã tải xong
     };
+
     return (
         <div className="min-h-[40vh] bg-[#06121d] px-5 py-3 lg:py-5">
             {isLoading ? (
@@ -108,7 +118,11 @@ const MovieDetail = () => {
                     <div className="relative py-3">
                         <figure className="h-[480px] lg:h-[450px]">
                             <img
-                                src={movieInfo.thumbUrl ? `http://localhost:8080/images/movies/${movieInfo.thumbUrl}` : "/img-placeholder.jpg"}
+                                src={
+                                    movieInfo.thumbUrl
+                                        ? `http://localhost:8080/images/movies/${movieInfo.thumbUrl}`
+                                        : "/img-placeholder.jpg"
+                                }
                                 width={1280}
                                 height={450}
                                 className="h-full w-full object-cover brightness-50"
@@ -116,7 +130,11 @@ const MovieDetail = () => {
                         </figure>
                         <figure className="absolute left-5 top-5 h-[285px] w-[200px]">
                             <img
-                                src={movieInfo.posterUrl ? `http://localhost:8080/images/movies/${movieInfo.posterUrl}` : "/img-placeholder.jpg"}
+                                src={
+                                    movieInfo.posterUrl
+                                        ? `http://localhost:8080/images/movies/${movieInfo.posterUrl}`
+                                        : "/img-placeholder.jpg"
+                                }
                                 width={200}
                                 height={285}
                                 className="h-full w-full object-cover"
@@ -128,8 +146,7 @@ const MovieDetail = () => {
                                     <div className="flex items-center gap-1">
                                         <CircularProgressBar
                                             percent={Math.round(
-                                                movieInfo.voteAverage *
-                                                10,
+                                                movieInfo.voteAverage * 10,
                                             )}
                                         />
                                         <span className="text-white">
@@ -142,7 +159,7 @@ const MovieDetail = () => {
                                         .slice(0, 3)
                                         .map((genre) => (
                                             <li
-                                                key={genre.id}
+                                                key={genre._id}
                                                 className="rounded-lg bg-white p-[6px] text-sm font-medium text-black"
                                             >
                                                 {genre.nameGenre}
@@ -210,15 +227,19 @@ const MovieDetail = () => {
                         </p>
                         <p>
                             <span className="font-medium">Đạo diễn:</span>{" "}
-                            {(movieInfo?.director || [])}
+                            {movieInfo?.director || []}
                         </p>
                         <p>
                             <span className="font-medium">Diễn viên:</span>{" "}
-                            {(movieInfo?.actor || [])}
+                            {movieInfo?.actor || []}
                         </p>
                     </div>
 
-                    <Comments movieId={movieInfo._id} userId={userId} onLoadComplete={handleSidebarLoadComplete} />
+                    <Comments
+                        movieId={movieInfo._id}
+                        userId={userId}
+                        onLoadComplete={handleSidebarLoadComplete}
+                    />
                     <Toast />
                 </div>
             )}
