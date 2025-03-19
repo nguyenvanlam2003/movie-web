@@ -21,6 +21,7 @@ const Comment = ({
         activeComment.type === "editing";
     const canReply = !!currentUserId;
     const canEdit = currentUserId === comment.userId;
+    console.log("comment uid", comment?.userId);
     const canDelete = currentUserId === comment.userId && replies.length === 0;
 
     return (
@@ -31,7 +32,23 @@ const Comment = ({
             <div className="flex-1">
                 <div className="flex items-center gap-2">
                     <p className="text-lg font-medium">{comment.username}</p>
-                    <p>{new Date(comment.createdAt).toLocaleDateString()}</p>
+                    <p>
+                        {new Date(comment.createdAt).toLocaleDateString(
+                            "vi-VN",
+                            {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                            },
+                        )}{" "}
+                        {new Date(comment.createdAt).toLocaleTimeString(
+                            "vi-VN",
+                            {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            },
+                        )}
+                    </p>
                 </div>
                 {!isEditing && <p className="mt-1">{comment.content}</p>}
                 {isEditing && (
@@ -40,7 +57,7 @@ const Comment = ({
                         hasCancelButton
                         initialText={comment.content}
                         handleSubmit={(text) =>
-                            updateComment(text, comment._id, parentId)
+                            updateComment(text, comment._id)
                         }
                         handleCancel={() => setActiveComment(null)}
                     />
@@ -75,7 +92,7 @@ const Comment = ({
                     {canDelete && (
                         <p
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
-                            onClick={() => deleteComment(comment._id, parentId)}
+                            onClick={() => deleteComment(comment._id)}
                         >
                             Xóa
                         </p>
@@ -88,6 +105,7 @@ const Comment = ({
                             addComment(text, parentId ? parentId : comment._id)
                         }
                         submitLabel="Bình luận"
+                        handleCancel={() => setActiveComment(null)}
                     />
                 )}
 

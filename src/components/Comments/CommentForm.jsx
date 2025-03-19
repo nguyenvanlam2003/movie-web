@@ -5,6 +5,7 @@ const CommentForm = ({
     submitLabel,
     hasCancelButton = true,
     initialText = "",
+    handleCancel,
 }) => {
     const [text, setText] = useState(initialText);
     const isTextareaDisabled = text.length === 0;
@@ -27,7 +28,7 @@ const CommentForm = ({
             ></textarea>
             <div className="mt-1 flex gap-2">
                 <button
-                    className="flex h-9 w-[90px] items-center justify-center rounded-xl bg-[#0d6efd]"
+                    className="flex h-9 w-[90px] cursor-pointer items-center justify-center rounded-xl bg-[#0d6efd]"
                     disabled={isTextareaDisabled}
                 >
                     {submitLabel}
@@ -35,10 +36,7 @@ const CommentForm = ({
                 {hasCancelButton && (
                     <button
                         className="flex h-9 w-[90px] items-center justify-center rounded-xl bg-[#6c757d]"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setText("");
-                        }}
+                        onClick={handleCancel}
                     >
                         Hủy
                     </button>

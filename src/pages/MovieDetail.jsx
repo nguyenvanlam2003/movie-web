@@ -105,6 +105,7 @@ const MovieDetail = () => {
         }
     };
     const [commentLoaded, setcommentLoaded] = useState(false);
+    console.log("commentLoaded", commentLoaded);
     const handleSidebarLoadComplete = () => {
         setcommentLoaded(true); // Cập nhật trạng thái khi sidebar đã tải xong
     };
