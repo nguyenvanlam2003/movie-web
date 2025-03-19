@@ -40,7 +40,7 @@ const CommentForm = ({
                             setText("");
                         }}
                     >
-                        Cancel
+                        Hủy
                     </button>
                 )}
             </div>

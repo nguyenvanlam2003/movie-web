@@ -138,18 +138,18 @@ const ManageMovie = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-
-
                 // Gửi yêu cầu với Authorization header chứa JWT
-                const response = await axios.get('http://localhost:8080/api/movies', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+                const response = await axios.get(
+                    "http://localhost:8080/api/movies",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     },
-                });
+                );
 
                 setMovies(response.data);
                 console.log(response.data);
-
             } catch (error) {
                 console.error("Error fetching Users:", error);
             }
@@ -175,7 +175,10 @@ const ManageMovie = () => {
     };
     return (
         <div className="flex">
-            <SideBar onLoadComplete={handleSidebarLoadComplete} className="flex-1" />
+            <SideBar
+                onLoadComplete={handleSidebarLoadComplete}
+                className="flex-1"
+            />
             {sidebarLoaded && (
                 <section className="flex-[4]">
                     <h1 className="mt-10 bg-[#f4f6f9] px-2 py-2 text-3xl">
@@ -230,7 +233,7 @@ const ManageMovie = () => {
                                     <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                         Thời gian
                                     </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
+                                    <th className="min-w-32 text-nowrap border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                         Năm phát hành
                                     </th>
                                     <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
@@ -239,9 +242,9 @@ const ManageMovie = () => {
                                     <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                         Đạo diễn
                                     </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Bình luận
-                                    </th>
+                                    {/* <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
+                                        Diễn viên
+                                    </th> */}
                                     <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
                                         Chức năng
                                     </th>
@@ -258,7 +261,11 @@ const ManageMovie = () => {
                                         </td>
                                         <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                             <img
-                                                src={movie.posterUrl ? `http://localhost:8080/images/movies/${movie.posterUrl}` : "/img-placeholder.jpg"}
+                                                src={
+                                                    movie.posterUrl
+                                                        ? `http://localhost:8080/images/movies/${movie.posterUrl}`
+                                                        : "/img-placeholder.jpg"
+                                                }
                                                 alt=""
                                                 className="h-32 w-32 object-cover"
                                             />
@@ -275,16 +282,19 @@ const ManageMovie = () => {
                                                 .join(", ")}
                                         </td>
                                         <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {(movie.director)}
+                                            {movie.director}
                                         </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                        {/* <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
+                                            {movie.actor}
+                                        </td> */}
+                                        {/* <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                             <a
                                                 href={`/comment/${movie._id}`}
                                                 className="text-red-500"
                                             >
                                                 Chi tiết(2)
                                             </a>
-                                        </td>
+                                        </td> */}
                                         <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
                                             <a
                                                 href={`/admin/movie/edit/${movie._id}`}
@@ -297,7 +307,9 @@ const ManageMovie = () => {
                                                 className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
                                                 onClick={() => {
                                                     setShowModal(true);
-                                                    setDeletedMovieId(movie._id);
+                                                    setDeletedMovieId(
+                                                        movie._id,
+                                                    );
                                                     setModalContent(
                                                         `phim "${movie.originName}"`,
                                                     );
@@ -321,7 +333,8 @@ const ManageMovie = () => {
                             token={token}
                         />
                     )}
-                </section>)}
+                </section>
+            )}
         </div>
     );
 };

@@ -38,43 +38,43 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
             if (parentId == null) {
                 const comment = {
                     content: text,
-                    movieId: movieId
-                }
+                    movieId: movieId,
+                };
                 console.log(comment);
 
-                const response = await axios.post(`http://localhost:8080/api/comments`,
+                const response = await axios.post(
+                    `http://localhost:8080/api/comments`,
                     comment,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                    });
+                    },
+                );
                 window.location.reload();
             } else {
-                const replie = {
+                const replies = {
                     contentReplies: text,
-                    parentId: parentId
-                }
-                console.log(replie);
+                    parentId: parentId,
+                };
+                console.log(replies);
 
-                const response = await axios.post(`http://localhost:8080/api/comments/replies`,
-                    replie,
+                const response = await axios.post(
+                    `http://localhost:8080/api/comments/replies`,
+                    replies,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
-                    });
+                    },
+                );
                 window.location.reload();
             }
 
             setActiveComment(null);
-
-
         } catch (err) {
             console.error(err);
         }
-
-
     };
 
     const updateComment = (text, commentId, parentId = null) => {
@@ -138,25 +138,24 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
         // getCommentsApi().then((data) => {
         //     setBackendComments(data);
         // });
-        const fetchCommnets = async () => {
+        const fetchComments = async () => {
             try {
                 // Gửi yêu cầu với Authorization header chứa JWT
-                const response = await axios.get(`http://localhost:8080/api/comments/${movieId}`, {
-
-                });
+                const response = await axios.get(
+                    `http://localhost:8080/api/comments/${movieId}`,
+                    {},
+                );
                 setBackendComments(response.data);
                 console.log(response.data);
-
             } catch (error) {
                 console.error("Error fetching comment:", error);
-            }
-            finally {
+            } finally {
                 setLoading(false);
                 onLoadComplete(); // Gọi hàm khi dữ liệu đã được tải xong
             }
         };
 
-        fetchCommnets();
+        fetchComments();
     }, [onLoadComplete]);
 
     return (

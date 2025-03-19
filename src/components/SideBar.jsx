@@ -108,12 +108,12 @@ const SideBar = ({ onLoadComplete }) => {
                             </li>
                         </ul> */}
                     </li>
-                    <li>
+                    {/* <li>
                         <a href="/comment" className="flex items-center gap-2">
                             <FontAwesomeIcon icon={faTableList} />
                             <p>Quản lý bình luận</p>
                         </a>
-                    </li>
+                    </li> */}
                     <li>
                         <a
                             href="#!"

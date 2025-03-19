@@ -25,11 +25,9 @@ const Comment = ({
 
     return (
         <div className="mb-6 flex gap-3">
-            <img
-                src="https://static.vecteezy.com/system/resources/previews/011/675/374/original/man-avatar-image-for-profile-png.png"
-                alt=""
-                className="h-14 w-14 rounded-[50%] object-cover"
-            />
+            <div className="flex h-11 w-11 items-center justify-center rounded-[50%] bg-[#fd7e97] text-white">
+                {comment?.username.slice(0, 2).toUpperCase()}
+            </div>
             <div className="flex-1">
                 <div className="flex items-center gap-2">
                     <p className="text-lg font-medium">{comment.username}</p>
