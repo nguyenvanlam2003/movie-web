@@ -20,9 +20,37 @@ const Comment = ({
         activeComment.id === comment._id &&
         activeComment.type === "editing";
     const canReply = !!currentUserId;
-    const canEdit = currentUserId === comment.userId;
+    const canEdit =
+        currentUserId === comment.userId && comment?.replies?.length === 0;
     console.log("comment uid", comment?.userId);
-    const canDelete = currentUserId === comment.userId && replies.length === 0;
+    const canDelete =
+        currentUserId === comment.userId && comment?.replies?.length === 0;
+    console.log("comment day", comment);
+
+    function timeAgo(createdAt) {
+        const now = new Date();
+        const past = new Date(createdAt);
+        const diffInSeconds = Math.floor((now - past) / 1000);
+
+        const intervals = [
+            { label: "năm", seconds: 31536000 },
+            { label: "tháng", seconds: 2592000 },
+            { label: "ngày", seconds: 86400 },
+            { label: "giờ", seconds: 3600 },
+            { label: "phút", seconds: 60 },
+            { label: "giây", seconds: 1 },
+        ];
+
+        for (const interval of intervals) {
+            const count = Math.floor(diffInSeconds / interval.seconds);
+            if (count >= 1) {
+                return count === 1
+                    ? `1 ${interval.label} trước`
+                    : `${count} ${interval.label} trước`;
+            }
+        }
+        return "Vừa xong";
+    }
 
     return (
         <div className="mb-6 flex gap-3">
@@ -32,7 +60,7 @@ const Comment = ({
             <div className="flex-1">
                 <div className="flex items-center gap-2">
                     <p className="text-lg font-medium">{comment.username}</p>
-                    <p>
+                    {/* <p>
                         {new Date(comment.createdAt).toLocaleDateString(
                             "vi-VN",
                             {
@@ -48,7 +76,8 @@ const Comment = ({
                                 minute: "2-digit",
                             },
                         )}
-                    </p>
+                    </p> */}
+                    <p>{timeAgo(comment.createdAt)}</p>
                 </div>
                 {!isEditing && <p className="mt-1">{comment.content}</p>}
                 {isEditing && (
@@ -92,7 +121,9 @@ const Comment = ({
                     {canDelete && (
                         <p
                             className="mt-1 cursor-pointer px-1 text-[#0071dc] hover:underline"
-                            onClick={() => deleteComment(comment._id)}
+                            onClick={() =>
+                                deleteComment(comment._id, comment.content)
+                            }
                         >
                             Xóa
                         </p>

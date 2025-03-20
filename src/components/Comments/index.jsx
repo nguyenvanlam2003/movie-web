@@ -11,6 +11,12 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
     const [activeComment, setActiveComment] = useState(null);
     const token = Cookies.get("accessToken");
 
+    function truncateText(text, maxLength = 100) {
+        return text.length > maxLength
+            ? text.slice(0, maxLength) + "..."
+            : text;
+    }
+
     const addComment = async (text, parentId = null) => {
         try {
             let response;
@@ -84,8 +90,12 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
         }
     };
 
-    const deleteComment = async (commentId) => {
-        if (window.confirm("Bạn có chắc muốn xóa bình luận này?")) {
+    const deleteComment = async (commentId, content) => {
+        if (
+            window.confirm(
+                `Bạn có chắc muốn xóa bình luận "${truncateText(content)}"?`,
+            )
+        ) {
             try {
                 await axios.delete(
                     `http://localhost:8080/api/comments/${commentId}`,
