@@ -21,39 +21,45 @@ const UserProfile = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [avatarPreview, setAvatarPreview] = useState("/img-placeholder.jpg")
+    const [avatarPreview, setAvatarPreview] = useState("/img-placeholder.jpg");
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
-    const [id, setId] = useState("")
+    const [id, setId] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const token = Cookies.get("accessToken");// Lấy accessToken từ cookie
+                const token = Cookies.get("accessToken"); // Lấy accessToken từ cookie
                 if (token) {
-                    setIsLoggedIn(true)
+                    setIsLoggedIn(true);
                     const decodedToken = jwt_decode(token); // Giải mã accessToken
                     setId(decodedToken.id);
 
-                    const response = await axios.get(`http://localhost:8080/api/users/find/${id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
+                    const response = await axios.get(
+                        `http://localhost:8080/api/users/find/${id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
                         },
-                    });
+                    );
                     const userData = response.data;
                     // Cập nhật state với dữ liệu người dùng
 
                     setUserName(userData.username);
                     setEmail(userData.email);
                     setPassword(userData.password);
-                    setAvatarPreview("http://localhost:8080/images/avatar/" + userData.avatar);
+                    setAvatarPreview(
+                        "http://localhost:8080/images/avatar/" +
+                            userData.avatar,
+                    );
                     setValue("username", userData.username);
                     setValue("email", userData.email);
                     setValue("_id", decodedToken.id);
-                    setValue("password", confirmPassword)
+                    setValue("password", confirmPassword);
                 } else {
-                    setIsLoggedIn(false)
+                    setIsLoggedIn(false);
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu người dùng:", error);
@@ -61,8 +67,6 @@ const UserProfile = () => {
         };
         fetchUser();
     }, [isLoggedIn]); // Chạy khi component mount
-
-
 
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
@@ -98,22 +102,17 @@ const UserProfile = () => {
 
                 // Nếu có ảnh mới, thêm file vào formData
                 if (data.avatar) {
-                    formData.append("avatar", data.avatar[0]);  // data.avatar[0] vì file là array
+                    formData.append("avatar", data.avatar[0]); // data.avatar[0] vì file là array
                 }
 
-
-                const response = await axios.put(
-                    "http://localhost:8080/api/users/",
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "multipart/form-data",  // Đảm bảo header phù hợp
-                        },
-                    }
-                );
+                await axios.put("http://localhost:8080/api/users/", formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data", // Đảm bảo header phù hợp
+                    },
+                });
                 console.log({ formData: data });
-                navigate("/")
+                navigate("/");
             } catch (error) {
                 console.error("Error updating user:", error);
             }
@@ -206,7 +205,9 @@ const UserProfile = () => {
                                     placeholder="Nhập tên người dùng của bạn"
                                     className="h-full w-full"
                                     value={userName}
-                                    onChange={(e) => setUserName(e.target.value)}
+                                    onChange={(e) =>
+                                        setUserName(e.target.value)
+                                    }
                                 />
                             </div>
                         </div>

@@ -1,28 +1,14 @@
-import axios from 'axios';
-const Modal = ({
-    content = "",
-    setShowModal,
-    router,
-    deleteId,
-    token
-}) => {
+import axios from "axios";
+const Modal = ({ content = "", setShowModal, router, deleteId, token }) => {
     const handleDeleteItem = async () => {
-        // const newList = listItem.filter((movie) => {
-        //     return movie.id !== deletedItemId;
-        // });
-        // setListItem(newList);
-        // setShowModal(false);
         console.log(router, deleteId, token);
 
         try {
-            const response = await axios.delete(
-                `${router + deleteId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                }
-            );
+            await axios.delete(`${router + deleteId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             setShowModal(false);
             window.location.reload();
         } catch (error) {
@@ -47,7 +33,9 @@ const Modal = ({
                     </button>
                     <button
                         className="flex h-10 items-center justify-center rounded-md bg-[#ed4337] px-6 font-medium text-white"
-                        onClick={() => handleDeleteItem(router, deleteId, token)}
+                        onClick={() =>
+                            handleDeleteItem(router, deleteId, token)
+                        }
                     >
                         Xóa
                     </button>

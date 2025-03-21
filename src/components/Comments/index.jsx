@@ -55,7 +55,7 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
 
             if (response?.status === 201) {
                 console.log("Thêm bình luận thành công:", response.data);
-                fetchComments(); // ✅ Gọi API để cập nhật danh sách bình luận
+                fetchComments();
             }
 
             setActiveComment(null);
@@ -106,7 +106,7 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
                     },
                 );
 
-                fetchComments(); // ✅ Cập nhật danh sách sau khi xóa
+                fetchComments();
             } catch (err) {
                 console.error("Lỗi khi xóa bình luận:", err);
             }
@@ -124,7 +124,6 @@ const Comments = ({ movieId, userId, onLoadComplete }) => {
                 },
             );
             setBackendComments(response.data);
-            console.log("Cập nhật danh sách bình luận:", response.data);
         } catch (error) {
             console.error("Lỗi khi lấy bình luận:", error);
         } finally {

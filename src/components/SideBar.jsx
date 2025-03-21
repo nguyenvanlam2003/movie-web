@@ -37,16 +37,16 @@ const SideBar = ({ onLoadComplete }) => {
                 );
                 const userData = response.data;
                 setUserName(userData.username);
-                console.log(userName);
+                console.log(userName, loading);
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu người dùng:", error);
             } finally {
                 setLoading(false);
-                onLoadComplete(); // Gọi hàm khi dữ liệu đã được tải xong
+                onLoadComplete();
             }
         };
         fetchUser();
-    }, [onLoadComplete, id, token]);
+    }, []);
     return (
         <aside className="min-h-screen flex-shrink-0 bg-[#343a40] px-10 py-2 text-white shadow-sm shadow-slate-700">
             <a href="/">
