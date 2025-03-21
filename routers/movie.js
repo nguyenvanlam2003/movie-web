@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const Movie = require("../models/Movie");
 const verify = require("../verifyToken");
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const CryptoJS = require("crypto-js");
 const mongoose = require("mongoose");
 
 // Đường dẫn đến thư mục images/avatar trong thư mục gốc của dự án
-const avatarDir = path.join(__dirname, '..', 'images', 'movies');
+const avatarDir = path.join(__dirname, "..", "images", "movies");
 
 // Tạo thư mục nếu chưa tồn tại
 if (!fs.existsSync(avatarDir)) {
@@ -21,12 +21,12 @@ const storage = multer.diskStorage({
         cb(null, avatarDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         cb(null, uniqueSuffix + path.extname(file.originalname)); // Tạo tên file duy nhất
-    }
+    },
 });
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
 // Create a new movie
 /**
  * @swagger
@@ -161,29 +161,31 @@ const upload = multer({ storage: storage })
  *         description: Lỗi máy chủ
  */
 
-router.post("/", verify,
+router.post(
+    "/",
+    verify,
     upload.fields([
-        { name: 'posterUrl', maxCount: 1 },
-        { name: 'thumbUrl', maxCount: 1 }
+        { name: "posterUrl", maxCount: 1 },
+        { name: "thumbUrl", maxCount: 1 },
     ]),
     async (req, res) => {
         if (req.user.isAdmin) {
             try {
                 // Chuyển đổi genres từ chuỗi thành mảng ObjectId
                 if (req.body.genres) {
-                    req.body.genres = req.body.genres.split(',').map(id => id.trim().replace(/^'|'$/g, ""));
+                    req.body.genres = req.body.genres.split(",").map((id) => id.trim().replace(/^'|'$/g, ""));
                 }
                 // Chuyển đổi episodes từ chuỗi JSON thành mảng đối tượng
                 if (req.body.episodes) {
-                    req.body.episodes = JSON.parse(req.body.episodes).map(episode => {
+                    req.body.episodes = JSON.parse(req.body.episodes).map((episode) => {
                         return {
                             ...episode,
                             _id: new mongoose.Types.ObjectId(), // Tạo ObjectId mới cho mỗi episode
                         };
                     });
                 }
-                req.body.posterUrl = req.files['posterUrl']?.[0].filename;
-                req.body.thumbUrl = req.files['thumbUrl']?.[0].filename;
+                req.body.posterUrl = req.files["posterUrl"]?.[0].filename;
+                req.body.thumbUrl = req.files["thumbUrl"]?.[0].filename;
                 console.log(req.body);
                 const newMovie = new Movie(req.body);
                 const savedMovie = await newMovie.save();
@@ -196,8 +198,9 @@ router.post("/", verify,
         } else {
             res.status(403).json("Bạn không có quyền thêm phim mới!");
         }
-    });
-// get 
+    }
+);
+// get
 /**
  * @swagger
  * /api/movies:
@@ -265,24 +268,23 @@ router.post("/", verify,
 
 router.get("/", async (req, res) => {
     try {
-        // Lấy giá trị của query parameter `originName` từ request
-        const { originName } = req.query;
+        const { originName, sort } = req.query;
+        const query = originName ? { originName: { $regex: originName, $options: "i" } } : {};
 
-        // Kiểm tra nếu có `originName`, sẽ tìm kiếm theo từ khóa này, nếu không sẽ lấy toàn bộ phim
-        const query = originName
-            ? { originName: { $regex: originName, $options: "i" } } // Tìm kiếm không phân biệt hoa thường
-            : {};
+        const movies = await Movie.find(query)
+            .populate({
+                path: "genres",
+                select: { nameGenre: 1, _id: 0 },
+            })
+            .sort({ createdAt: -1 }); // Sắp xếp theo createdAt, -1 là giảm dần (mới nhất lên đầu)
 
-        // Tìm phim dựa trên query
-        const movies = await Movie.find(query).populate({
-            path: "genres",
-            select: { nameGenre: 1, _id: 0 }, // Chỉ lấy `nameGenre` của `genre`
-        });
         res.status(200).json(movies);
     } catch (err) {
-        res.status(500).json(err);
+        console.error("Lỗi khi lấy danh sách phim:", err);
+        res.status(500).json({ message: "Lỗi máy chủ", error: err.message });
     }
 });
+
 // get movie by id
 /**
  * @swagger
@@ -361,7 +363,7 @@ router.get("/:id", async (req, res) => {
     try {
         const movie = await Movie.findById(req.params.id).populate({
             path: "genres",
-            select: { nameGenre: 1, _id: 1 }
+            select: { nameGenre: 1, _id: 1 },
         });
 
         if (!movie) {
@@ -489,20 +491,22 @@ router.get("/:id", async (req, res) => {
  *         description: Lỗi máy chủ
  */
 
-router.put("/", verify,
+router.put(
+    "/",
+    verify,
     upload.fields([
-        { name: 'posterUrl', maxCount: 1 },
-        { name: 'thumbUrl', maxCount: 1 }
+        { name: "posterUrl", maxCount: 1 },
+        { name: "thumbUrl", maxCount: 1 },
     ]),
     async (req, res) => {
         try {
             if (req.user.isAdmin) {
                 if (req.body.genres) {
-                    req.body.genres = req.body.genres.split(',').map(id => id.trim().replace(/^'|'$/g, ""));
+                    req.body.genres = req.body.genres.split(",").map((id) => id.trim().replace(/^'|'$/g, ""));
                 }
                 // Chuyển đổi episodes từ chuỗi JSON thành mảng đối tượng
                 if (req.body.episodes) {
-                    req.body.episodes = JSON.parse(req.body.episodes).map(episode => {
+                    req.body.episodes = JSON.parse(req.body.episodes).map((episode) => {
                         return {
                             ...episode,
                             _id: new mongoose.Types.ObjectId(), // Tạo ObjectId mới cho mỗi episode
@@ -510,7 +514,7 @@ router.put("/", verify,
                     });
                 }
                 // Nếu có ảnh mới, kiểm tra xem ảnh cũ có tồn tại không
-                const findMovie = await Movie.findById(req.body._id)
+                const findMovie = await Movie.findById(req.body._id);
                 if (!findMovie) {
                     return res.status(404).json("Không tìm thấy phim");
                 }
@@ -526,9 +530,9 @@ router.put("/", verify,
                             }
                         }
                         // Cập nhật tên file mới vào DB
-                        req.body.posterUrl = req.files['posterUrl'][0].filename;
+                        req.body.posterUrl = req.files["posterUrl"][0].filename;
                     } else {
-                        req.body.posterUrl = findMovie.posterUrl
+                        req.body.posterUrl = findMovie.posterUrl;
                     }
 
                     // Kiểm tra nếu có thumbUrl mới thì xóa ảnh cũ
@@ -540,10 +544,9 @@ router.put("/", verify,
                             }
                         }
                         // Cập nhật tên file mới vào DB
-                        req.body.thumbUrl = req.files['thumbUrl'][0].filename;
-                    }
-                    else {
-                        req.body.thumbUrl = findMovie.thumbUrl
+                        req.body.thumbUrl = req.files["thumbUrl"][0].filename;
+                    } else {
+                        req.body.thumbUrl = findMovie.thumbUrl;
                     }
                 }
                 console.log(req.body);
@@ -551,28 +554,26 @@ router.put("/", verify,
                 const updatedMovie = await Movie.findByIdAndUpdate(
                     req.body._id,
                     { $set: req.body },
-                    { new: true, runValidators: true }  // new: true trả về document mới sau khi cập nhật
+                    { new: true, runValidators: true } // new: true trả về document mới sau khi cập nhật
                 ).populate({
                     path: "genres",
-                    select: { nameGenre: 1, _id: 0 }  // Chỉ lấy ra nameGenre
+                    select: { nameGenre: 1, _id: 0 }, // Chỉ lấy ra nameGenre
                 });
-                console.log(updatedMovie);
                 if (!updatedMovie) {
                     return res.status(404).json("Không tìm thấy phim");
                 }
-
 
                 res.status(200).json(updatedMovie);
             } else {
                 res.status(403).json("Bạn không có quyên sửa!!");
             }
-
         } catch (err) {
             console.error(err);
 
             res.status(500).json(err);
         }
-    });
+    }
+);
 
 // delete movie by id
 /**
@@ -611,8 +612,6 @@ router.delete("/:id", verify, async (req, res) => {
     try {
         console.log(req.user.isAdmin);
         if (req.user.isAdmin) {
-
-
             const movie = await Movie.findById(req.params.id);
 
             if (!movie) {
@@ -637,13 +636,11 @@ router.delete("/:id", verify, async (req, res) => {
         } else {
             res.status(403).json("Bạn không có quyền xóa!");
         }
-
     } catch (err) {
         console.error(err);
 
         res.status(500).json(err);
     }
 });
-
 
 module.exports = router;

@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const Genre = require("../models/Genre");
-const verify = require('../verifyToken');
+const verify = require("../verifyToken");
 
-//create 
+//create
 
 /**
  * @swagger
@@ -64,15 +64,14 @@ router.post("/", verify, async (req, res) => {
             const saveGenre = await newGenre.save();
             res.status(201).json(saveGenre);
         } catch (err) {
-            res.status(500).json(err)
+            res.status(500).json(err);
         }
     } else {
-        res.status(403).json("you are not allowed!")
+        res.status(403).json("you are not allowed!");
     }
-})
+});
 
-//get all genres 
-
+//get all genres
 
 /**
  * @swagger
@@ -121,19 +120,20 @@ router.post("/", verify, async (req, res) => {
  */
 
 router.get("/", async (req, res) => {
-
     const query = req.query.new;
 
     try {
+        // const genres = query
+        //     ? await Genre.find().sort({ _id: 1 }).limit(2)
+        //     : await Genre.find();
         const genres = query
-            ? await Genre.find().sort({ _id: 1 }).limit(2)
-            : await Genre.find();
+            ? await Genre.find().sort({ createdAt: -1 }).limit(2) // Giảm dần (mới nhất trước)
+            : await Genre.find().sort({ createdAt: -1 }); // Giảm dần (mới nhất trước)
         res.status(200).json(genres);
     } catch (err) {
-        res.status(500).json(err)
+        res.status(500).json(err);
     }
-
-})
+});
 
 // get by id
 
@@ -182,13 +182,11 @@ router.get("/", async (req, res) => {
 router.get("/find/:id", async (req, res) => {
     try {
         const genres = await Genre.findById(req.params.id);
-        res.status(200).json(genres)
-
+        res.status(200).json(genres);
     } catch (err) {
-        res.status(500).json(err)
+        res.status(500).json(err);
     }
-})
-
+});
 
 //update
 /**
@@ -245,11 +243,7 @@ router.get("/find/:id", async (req, res) => {
 router.put("/", verify, async (req, res) => {
     try {
         if (req.user.isAdmin) {
-            const updatedGenre = await Genre.findByIdAndUpdate(
-                req.body._id,
-                { $set: req.body },
-                { new: true }
-            );
+            const updatedGenre = await Genre.findByIdAndUpdate(req.body._id, { $set: req.body }, { new: true });
             res.status(200).json(updatedGenre);
         } else {
             res.status(403).json("Bạn không có quyền!");
@@ -260,7 +254,6 @@ router.put("/", verify, async (req, res) => {
 });
 
 //delete
-
 
 /**
  * @swagger
@@ -306,6 +299,4 @@ router.delete("/:id", verify, async (req, res) => {
     }
 });
 
-
-
-module.exports = router  
+module.exports = router;

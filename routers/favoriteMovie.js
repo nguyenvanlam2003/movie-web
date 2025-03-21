@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const FavoriteMovie = require("../models/FavoriteMovie");
-const User = require("../models/User")
-const Movie = require('../models/Movie');
+const User = require("../models/User");
+const Movie = require("../models/Movie");
 const verify = require("../verifyToken");
 
-// post 
+// post
 /**
  * @swagger
  * /api/favoriteMovies:
@@ -51,7 +51,6 @@ const verify = require("../verifyToken");
  *         description: Lỗi máy chủ
  */
 
-
 router.post("/", verify, async (req, res) => {
     try {
         const findFavoriteMovie = await FavoriteMovie.findOne({ _id: req.user.id });
@@ -59,13 +58,11 @@ router.post("/", verify, async (req, res) => {
         if (findFavoriteMovie === null) {
             const newFavoriteMovie = new FavoriteMovie({
                 _id: req.user.id,
-                movieIds: req.body.movieIds
+                movieIds: req.body.movieIds,
             });
-            console.log("da va den day", newFavoriteMovie);
 
             const savedFavoriteMovie = await newFavoriteMovie.save();
             console.log("da luu", savedFavoriteMovie);
-
 
             // Lấy thông tin người dùng
             const user = await User.findById(savedFavoriteMovie._id);
@@ -75,24 +72,17 @@ router.post("/", verify, async (req, res) => {
 
             const response = {
                 userName: user.username,
-                movieNames: movies.map(movie => movie.originName),
+                movieNames: movies.map((movie) => movie.originName),
             };
 
             res.status(201).json(response);
         } else {
-
             // Nếu đã có danh sách yêu thích, chỉ thêm phim mới
-            const newMovieIds = req.body.movieIds.filter(
-                movieId => !findFavoriteMovie.movieIds.includes(movieId)
-            );
+            const newMovieIds = req.body.movieIds.filter((movieId) => !findFavoriteMovie.movieIds.includes(movieId));
             if (newMovieIds.length > 0) {
                 // Cập nhật chỉ trường movieIds bằng cách thêm phim mới vào danh sách
-                await FavoriteMovie.updateOne(
-                    { _id: req.user.id },
-                    { $push: { movieIds: { $each: newMovieIds } } }
-                );
+                await FavoriteMovie.updateOne({ _id: req.user.id }, { $push: { movieIds: { $each: newMovieIds } } });
             }
-
 
             const updatedFavoriteMovie = await FavoriteMovie.findById(req.user.id);
 
@@ -102,12 +92,11 @@ router.post("/", verify, async (req, res) => {
 
             const response = {
                 userName: user.username,
-                movieNames: movies.map(movie => movie.originName),
+                movieNames: movies.map((movie) => movie.originName),
             };
 
             res.status(200).json(response);
         }
-
     } catch (err) {
         console.error("Error details:", err);
         res.status(500).json(err);
@@ -123,7 +112,7 @@ router.post("/", verify, async (req, res) => {
  *     summary: Lấy danh sách phim yêu thích
  *     tags: [FavoriteMovies]
  *     security:
- *       - bearerAuth: []  
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Trả về danh sách phim yêu thích của người dùng
@@ -195,14 +184,14 @@ router.get("/", verify, async (req, res) => {
         }
 
         // Lấy thông tin phim từ danh sách yêu thích
-        const movies = favoriteMovie.movieIds.map(movie => ({
+        const movies = favoriteMovie.movieIds.map((movie) => ({
             _id: movie._id,
             name: movie.originName,
             posterUrl: movie.posterUrl,
             year: movie.year,
             time: movie.time,
             type: movie.type,
-            slug: movie.slug
+            slug: movie.slug,
         }));
         // Lấy thông tin người dùng
         const user = await User.findById(favoriteMovie._id);
@@ -214,8 +203,6 @@ router.get("/", verify, async (req, res) => {
         };
 
         res.status(200).json(response);
-
-
     } catch (err) {
         console.error("err", err);
 
@@ -225,7 +212,6 @@ router.get("/", verify, async (req, res) => {
 
 // Phương thức GET dành cho admin để lấy tất cả danh sách phim yêu thích
 
-
 /**
  * @swagger
  * /api/favoriteMovies/all:
@@ -233,7 +219,7 @@ router.get("/", verify, async (req, res) => {
  *     summary: Lấy tất cả danh sách phim yêu thích
  *     tags: [FavoriteMovies]
  *     security:
- *       - bearerAuth: []  
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Trả về danh sách phim yêu thích của tất cả người dùng
@@ -281,9 +267,9 @@ router.get("/all", verify, async (req, res) => {
         const favoriteMovies = await FavoriteMovie.find().populate("movieIds").populate("_id");
 
         // Tạo phản hồi chứa danh sách yêu thích của tất cả người dùng
-        const response = favoriteMovies.map(favoriteMovie => ({
+        const response = favoriteMovies.map((favoriteMovie) => ({
             userName: favoriteMovie._id.username,
-            movieNames: favoriteMovie.movieIds.map(movie => movie.originName),
+            movieNames: favoriteMovie.movieIds.map((movie) => movie.originName),
         }));
 
         res.status(200).json(response);
@@ -301,7 +287,7 @@ router.get("/all", verify, async (req, res) => {
  *     summary: Xóa phim khỏi danh sách yêu thích
  *     tags: [FavoriteMovies]
  *     security:
- *       - bearerAuth: []  
+ *       - bearerAuth: []
  *     parameters:
  *       - name: movieId
  *         in: path
@@ -342,7 +328,6 @@ router.get("/all", verify, async (req, res) => {
  *               example: "Internal Server Error"
  */
 
-
 router.delete("/deleteMovieId/:movieId", verify, async (req, res) => {
     try {
         // Tìm danh sách yêu thích dựa trên userId
@@ -360,15 +345,15 @@ router.delete("/deleteMovieId/:movieId", verify, async (req, res) => {
         // Xóa movieId khỏi mảng movieIds
         await FavoriteMovie.updateOne(
             { _id: req.user.id },
-            { $pull: { movieIds: req.params.movieId } }  // Sử dụng $pull để xóa phim
+            { $pull: { movieIds: req.params.movieId } } // Sử dụng $pull để xóa phim
         );
 
         const updatedFavoriteMovie = await FavoriteMovie.findById(req.user.id);
         const movies = await Movie.find({ _id: { $in: updatedFavoriteMovie.movieIds } });
 
         const response = {
-            userId: req.user.username,  // Có thể cần lấy lại từ User nếu cần
-            movieIds: movies.map(movie => movie.originName),
+            userId: req.user.username, // Có thể cần lấy lại từ User nếu cần
+            movieIds: movies.map((movie) => movie.originName),
         };
 
         res.status(200).json(response);
@@ -377,4 +362,4 @@ router.delete("/deleteMovieId/:movieId", verify, async (req, res) => {
     }
 });
 
-module.exports = router
+module.exports = router;
