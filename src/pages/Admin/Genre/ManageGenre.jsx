@@ -1,30 +1,27 @@
 import Modal from "@components/Modal";
 import SideBar from "@components/SideBar";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEdit,
+    faMagnifyingGlass,
+    faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo, useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 import Cookies from "js-cookie";
+import { Button, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const ManageGenre = () => {
-    const [genres, setGenres] = useState([
-        // {
-        //     id: crypto.randomUUID(),
-        //     nameGenre: "Chính kịch",
-        //     desc: "chinh-kich",
-        // },
-        // {
-        //     id: crypto.randomUUID(),
-        //     nameGenre: "Hành động",
-        //     desc: "hanh-dong",
-        // },
-    ]);
+    const [genres, setGenres] = useState([]);
     const token = Cookies.get("accessToken");
     useEffect(() => {
         // Gọi API để lấy dữ liệu
         const fetchGenres = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/genres');
+                const response = await axios.get(
+                    "http://localhost:8080/api/genres",
+                );
                 setGenres(response.data); // Thay thế toàn bộ state bằng dữ liệu từ API
             } catch (error) {
                 console.error("Error fetching genres:", error);
@@ -39,6 +36,7 @@ const ManageGenre = () => {
 
     const [deletedGenreId, setDeletedGenreId] = useState("");
     const [modalContent, setModalContent] = useState("");
+    const navigate = useNavigate();
 
     const [searchText, setSearchText] = useState("");
 
@@ -52,9 +50,59 @@ const ManageGenre = () => {
     const handleSidebarLoadComplete = () => {
         setSidebarLoaded(true); // Cập nhật trạng thái khi sidebar đã tải xong
     };
+
+    const columns = [
+        {
+            title: "STT",
+            dataIndex: "index",
+            key: "index",
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: "Tên thể loại",
+            dataIndex: "nameGenre",
+            key: "nameGenre",
+        },
+        {
+            title: "Mô tả",
+            dataIndex: "desc",
+            key: "desc",
+        },
+        {
+            title: "Hành động",
+            key: "action",
+            render: (_, record) => (
+                <div className="flex gap-2">
+                    <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faEdit} />}
+                        onClick={() =>
+                            navigate(`/admin/genre/edit/${record._id}`)
+                        }
+                    >
+                        Sửa
+                    </Button>
+                    <Button
+                        danger
+                        icon={<FontAwesomeIcon icon={faTrash} />}
+                        onClick={() => {
+                            setShowModal(true);
+                            setDeletedGenreId(record._id);
+                            setModalContent(`thể loại "${record.nameGenre}"`);
+                        }}
+                    >
+                        Xóa
+                    </Button>
+                </div>
+            ),
+        },
+    ];
     return (
         <div className="flex">
-            <SideBar onLoadComplete={handleSidebarLoadComplete} className="flex-1" />
+            <SideBar
+                onLoadComplete={handleSidebarLoadComplete}
+                className="flex-1"
+            />
             {sidebarLoaded && (
                 <section className="flex-[4]">
                     <h1 className="mt-10 bg-[#f4f6f9] px-2 py-2 text-3xl">
@@ -91,61 +139,38 @@ const ManageGenre = () => {
                             </div>
                         </div>
 
-                        <table className="w-full border-collapse overflow-x-auto text-left">
-                            <thead>
-                                <tr>
-                                    <th className="border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        STT
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Tên thể loại
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Mô tả
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Chức năng
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(filteredGenres || []).map((genre, index) => (
-                                    <tr key={genre._id}>
-                                        <td className="border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {index + 1}
+                        <Table
+                            dataSource={filteredGenres}
+                            columns={columns}
+                            components={{
+                                header: {
+                                    cell: ({ children, ...rest }) => (
+                                        <th
+                                            {...rest}
+                                            style={{
+                                                fontWeight: "bolder",
+                                                fontSize: "16px",
+                                            }}
+                                        >
+                                            {children}
+                                        </th>
+                                    ),
+                                },
+                                body: {
+                                    cell: ({ children, ...rest }) => (
+                                        <td
+                                            {...rest}
+                                            style={{ fontSize: "16px" }}
+                                        >
+                                            {children}
                                         </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {genre.nameGenre}
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {genre.desc}
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            <a
-                                                href={`/admin/genre/edit/${genre._id}`}
-                                                className="inline-block rounded-md bg-[#007bff] p-2 text-white"
-                                            >
-                                                Sửa
-                                            </a>
-                                            <a
-                                                href="#!"
-                                                className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
-                                                onClick={() => {
-                                                    setShowModal(true);
-                                                    setDeletedGenreId(genre._id);
-                                                    setModalContent(
-                                                        `thể loại "${genre.nameGenre}"`,
-                                                    );
-                                                }}
-
-                                            >
-                                                Xóa
-                                            </a>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                    ),
+                                },
+                            }}
+                            pagination={{
+                                pageSize: 5,
+                            }}
+                        />
                     </div>
 
                     {showModal && (
@@ -157,7 +182,8 @@ const ManageGenre = () => {
                             token={token}
                         />
                     )}
-                </section>)}
+                </section>
+            )}
         </div>
     );
 };

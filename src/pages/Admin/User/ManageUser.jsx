@@ -1,47 +1,36 @@
 import Modal from "@components/Modal";
 import SideBar from "@components/SideBar";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEdit,
+    faMagnifyingGlass,
+    faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Button, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const ManageUser = () => {
     // Lấy token từ cookies
     const token = Cookies.get("accessToken");
-    const [users, setUsers] = useState([
-        // {
-        //     id: crypto.randomUUID(),
-        //     userName: "user1",
-        //     fullName: "User Test 1",
-        //     avatar: "https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png",
-        //     email: "user1@gmail.com",
-        //     isAdmin: true,
-        // },
-        // {
-        //     id: crypto.randomUUID(),
-        //     userName: "user2",
-        //     fullName: "User Test 2",
-        //     avatar: "https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png",
-        //     email: "user2@gmail.com",
-        //     isAdmin: false,
-        // },
-    ]);
+    const [users, setUsers] = useState([]);
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-
-
                 // Gửi yêu cầu với Authorization header chứa JWT
-                const response = await axios.get('http://localhost:8080/api/users', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+                const response = await axios.get(
+                    "http://localhost:8080/api/users",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     },
-                });
+                );
 
                 setUsers(response.data);
                 console.log(response.data);
-
             } catch (error) {
                 console.error("Error fetching Users:", error);
             }
@@ -53,6 +42,7 @@ const ManageUser = () => {
     const [deletedUserId, setDeletedUserId] = useState("");
     const [modalContent, setModalContent] = useState("");
     const [searchText, setSearchText] = useState("");
+    const navigate = useNavigate();
 
     const filteredUsers = useMemo(() => {
         return users.filter((user) => {
@@ -64,9 +54,81 @@ const ManageUser = () => {
     const handleSidebarLoadComplete = () => {
         setSidebarLoaded(true); // Cập nhật trạng thái khi sidebar đã tải xong
     };
+
+    const columns = [
+        {
+            title: "STT",
+            dataIndex: "index",
+            key: "index",
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: "Tên người dùng",
+            dataIndex: "username",
+            key: "username",
+        },
+        {
+            title: "Avatar",
+            dataIndex: "avatar",
+            key: "avatar",
+            render: (url) => (
+                <img
+                    src={
+                        url
+                            ? `http://localhost:8080/images/avatar/${url}`
+                            : "/img-placeholder.jpg"
+                    }
+                    alt="Avatar"
+                    className="h-28 w-28 rounded object-cover"
+                />
+            ),
+        },
+        {
+            title: "Email",
+            dataIndex: "email",
+            key: "email",
+        },
+        {
+            title: "Quyền",
+            dataIndex: "isAdmin",
+            key: "isAdmin",
+            render: (isAdmin) => (isAdmin ? "Quản trị" : "Người dùng"),
+        },
+        {
+            title: "Hành động",
+            key: "action",
+            render: (_, record) => (
+                <div className="flex gap-2">
+                    <Button
+                        type="primary"
+                        icon={<FontAwesomeIcon icon={faEdit} />}
+                        onClick={() =>
+                            navigate(`/admin/user/edit/${record._id}`)
+                        }
+                    >
+                        Sửa
+                    </Button>
+                    <Button
+                        danger
+                        icon={<FontAwesomeIcon icon={faTrash} />}
+                        onClick={() => {
+                            setShowModal(true);
+                            setDeletedUserId(record._id);
+                            setModalContent(`người dùng "${record.username}"`);
+                        }}
+                    >
+                        Xóa
+                    </Button>
+                </div>
+            ),
+        },
+    ];
     return (
         <div className="flex">
-            <SideBar onLoadComplete={handleSidebarLoadComplete} className="flex-1" />
+            <SideBar
+                onLoadComplete={handleSidebarLoadComplete}
+                className="flex-1"
+            />
             {sidebarLoaded && (
                 <section className="flex-[4]">
                     <h1 className="mt-10 bg-[#f4f6f9] px-2 py-2 text-3xl">
@@ -95,82 +157,38 @@ const ManageUser = () => {
                             </form>
                         </div>
 
-                        <table className="w-full border-collapse overflow-x-auto text-left">
-                            <thead>
-                                <tr>
-                                    <th className="border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        STT
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Tên người dùng
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Avatar
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Email
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Quyền
-                                    </th>
-                                    <th className="min-w-32 border-b-2 border-b-[#dee2d6] p-3 align-bottom">
-                                        Chức năng
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredUsers.map((user, index) => (
-                                    <tr key={user.id}>
-                                        <td className="border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {index + 1}
+                        <Table
+                            dataSource={filteredUsers}
+                            columns={columns}
+                            components={{
+                                header: {
+                                    cell: ({ children, ...rest }) => (
+                                        <th
+                                            {...rest}
+                                            style={{
+                                                fontWeight: "bolder",
+                                                fontSize: "16px",
+                                            }}
+                                        >
+                                            {children}
+                                        </th>
+                                    ),
+                                },
+                                body: {
+                                    cell: ({ children, ...rest }) => (
+                                        <td
+                                            {...rest}
+                                            style={{ fontSize: "16px" }}
+                                        >
+                                            {children}
                                         </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {user.username}
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            <img
-                                                src={
-                                                    user.avatar
-                                                        ? `http://localhost:8080/images/avatar/${user.avatar}`
-                                                        : "/img-placeholder.jpg"
-                                                }
-                                                alt=""
-                                                className="h-28 w-28 rounded-lg object-cover"
-                                            />
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {user.email}
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            {user.isAdmin
-                                                ? "Quản trị"
-                                                : "Người dùng"}
-                                        </td>
-                                        <td className="min-w-32 border-t-2 border-t-[#dee2d6] p-3 align-top">
-                                            <a
-                                                href={`/admin/user/edit/${user._id}`}
-                                                className="inline-block rounded-md bg-[#007bff] p-2 text-white"
-                                            >
-                                                Sửa
-                                            </a>
-                                            <a
-                                                href="#!"
-                                                className="ml-1 inline-block rounded-md bg-[#dc3545] p-2 text-white"
-                                                onClick={() => {
-                                                    setShowModal(true);
-                                                    setDeletedUserId(user._id);
-                                                    setModalContent(
-                                                        `người dùng "${user.username}"`,
-                                                    );
-                                                }}
-                                            >
-                                                Xóa
-                                            </a>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                    ),
+                                },
+                            }}
+                            pagination={{
+                                pageSize: 5,
+                            }}
+                        />
                     </div>
 
                     {showModal && (
@@ -182,7 +200,8 @@ const ManageUser = () => {
                             token={token}
                         />
                     )}
-                </section>)}
+                </section>
+            )}
         </div>
     );
 };
