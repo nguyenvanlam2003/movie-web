@@ -28,7 +28,6 @@ router.post("/create_payment", async (req, res) => {
         const vnp_Params = {
             vnp_Version: "2.1.0",
             vnp_Command: "pay",
-            // vnp_TmnCode: config.vnp_TmnCode,
             vnp_TmnCode: process.env.VNP_TMNCODE,
             vnp_Locale: "vn",
             vnp_CurrCode: "VND",
@@ -36,7 +35,6 @@ router.post("/create_payment", async (req, res) => {
             vnp_OrderInfo: `Thanh toán gói xem phim`,
             vnp_OrderType: "other",
             vnp_Amount: 200000 * 100,
-            // vnp_ReturnUrl: config.vnp_ReturnUrl,
             vnp_ReturnUrl: process.env.VNP_RETURNURL,
             vnp_IpAddr: ipAddr,
             vnp_CreateDate: createDate,
