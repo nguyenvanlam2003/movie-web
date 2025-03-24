@@ -24,7 +24,6 @@ import CreateGenre from "@pages/Admin/Genre/CreateGenre";
 import EditGenre from "@pages/Admin/Genre/EditGenre";
 import FavoriteList from "@pages/FavoriteList";
 import AdminRouter from "./AdminRouter";
-import Payment from "@pages/Payment";
 import VnPayReturn from "@pages/VNPayReturn";
 const router = createBrowserRouter([
     {
@@ -107,10 +106,6 @@ const router = createBrowserRouter([
     {
         path: "/admin/genre/edit/:id",
         element: <AdminRouter element={<EditGenre />} />,
-    },
-    {
-        path: "/payment",
-        element: <Payment />,
     },
     {
         path: "/VnPayReturn",
