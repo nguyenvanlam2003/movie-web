@@ -378,6 +378,33 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+const Payment = require("../models/Payment");
+
+// router.get("/:id", async (req, res) => {
+//     try {
+//         const movie = await Movie.findById(req.params.id).populate({
+//             path: "genres",
+//             select: { nameGenre: 1, _id: 1 },
+//         });
+
+//         if (!movie) {
+//             return res.status(404).json({ message: "Không tìm thấy phim" });
+//         }
+
+//         // Kiểm tra nếu người dùng đã thanh toán
+//         const payment = await Payment.findOne({ userId: req.userId, status: "success" });
+
+//         if (!payment) {
+//             return res.status(403).json({ message: "Bạn chưa thanh toán, vui lòng thanh toán để xem phim." });
+//         }
+
+//         res.status(200).json(movie);
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json(err);
+//     }
+// });
+
 // update movie by id
 /**
  * @swagger

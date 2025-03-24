@@ -1,21 +1,22 @@
 const express = require("express");
 const app = express();
 const setupSwagger = require("./swagger");
-const mongoose = require("mongoose")
-const authRoutes = require("./routers/auth.js")
-const userRoutes = require("./routers/user.js")
-const genreRouter = require("./routers/genre.js")
-const movieRouter = require("./routers/movie.js")
-const favoriteRouter = require("./routers/favoriteMovie.js")
-const commentRouter = require("./routers/comment.js")
-const cors = require('cors');
-const dotenv = require("dotenv")
-const path = require('path');
+const mongoose = require("mongoose");
+const authRoutes = require("./routers/auth.js");
+const userRoutes = require("./routers/user.js");
+const genreRouter = require("./routers/genre.js");
+const movieRouter = require("./routers/movie.js");
+const favoriteRouter = require("./routers/favoriteMovie.js");
+const commentRouter = require("./routers/comment.js");
+const paymentRouter = require("./routers/payment.js");
 
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
 mongoose
     .connect(process.env.MONGO_URL, {})
     .then(() => console.log(`db connection successful`))
@@ -31,12 +32,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/genres", genreRouter);
 app.use("/api/movies", movieRouter);
 app.use("/api/favoriteMovies", favoriteRouter);
-app.use("/api/comments", commentRouter)
+app.use("/api/comments", commentRouter);
+app.use("/api/payment", paymentRouter);
 // Route để lấy ảnh từ thư mục images
-app.use('/images/avatar', express.static(path.join(__dirname, 'images', 'avatar')));
-app.use('/images/movies', express.static(path.join(__dirname, 'images', 'movies')));
-
+app.use("/images/avatar", express.static(path.join(__dirname, "images", "avatar")));
+app.use("/images/movies", express.static(path.join(__dirname, "images", "movies")));
 
 app.listen(port, () => {
-    console.log(`Backend server is listening ${port}`)
-})
+    console.log(`Backend server is listening ${port}`);
+});
